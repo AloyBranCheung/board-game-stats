@@ -24,6 +24,12 @@ export default function SidebarMenuOptions() {
       >
         Add Stat
       </Typography>
+      <Typography
+        sx={{ cursor: "pointer" }}
+        onClick={() => router.push("/managestats")}
+      >
+        Manage Stats
+      </Typography>
     </div>
   );
 }
