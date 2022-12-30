@@ -5,14 +5,15 @@ import useFirebaseAuth from "src/hooks/useFirebaseAuth";
 import LoginScreen from "src/components/LoginScreen";
 import TopNavbar from "./TopNavbar";
 // mui
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Box, useTheme } from "@mui/material";
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const { isLoggedIn, isLoading, logout } = useFirebaseAuth();
+  const { isLoggedIn, isLoading } = useFirebaseAuth();
+  const theme = useTheme();
 
   if (isLoading) {
     return (
@@ -29,7 +30,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div>
       <TopNavbar />
-      <div>{children}</div>
+      <Box
+        sx={{
+          backgroundColor: theme.palette.background.default,
+          minHeight: "100vh",
+        }}
+      >
+        {children}
+      </Box>
     </div>
   );
 }
