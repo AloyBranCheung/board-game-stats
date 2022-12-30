@@ -1,5 +1,9 @@
 import React from "react";
 
-export default function addstat() {
-  return <div>addstat</div>;
+export default function AddStat() {
+  return (
+    <div>
+      <button>Test Button</button>
+    </div>
+  );
 }

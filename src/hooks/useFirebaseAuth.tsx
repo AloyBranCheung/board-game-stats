@@ -22,6 +22,7 @@ const firebaseConfig = {
   storageBucket: "board-game-stats-3420c.appspot.com",
   messagingSenderId: "504930971739",
   appId: "1:504930971739:web:802340d19737e28a20cf7e",
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DB_URL,
 };
 
 // Initialize Firebase
@@ -31,7 +32,7 @@ const auth = getAuth(app);
 
 export default function useFirebaseAuth() {
   const router = useRouter();
-  const toastMessage = useToastErrorMessage();
+  const toastErrorMessage = useToastErrorMessage();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,7 +40,7 @@ export default function useFirebaseAuth() {
   // error message
   const setError = (error: any, message: string) => {
     console.error(error);
-    toastMessage(message);
+    toastErrorMessage(message);
     setIsError(true);
     setIsLoading(false);
   };
@@ -90,5 +91,7 @@ export default function useFirebaseAuth() {
     loginState();
   }, []);
 
-  return { login, logout, isLoading, isError, isLoggedIn };
+  const userProfile = auth.currentUser;
+
+  return { login, logout, isLoading, isError, isLoggedIn, userProfile };
 }
