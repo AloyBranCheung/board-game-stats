@@ -3,6 +3,7 @@ import useFirebaseAuth from "./useFirebaseAuth";
 import { getDatabase, ref, update, child, push } from "firebase/database";
 // react-toastify
 import useToastErrorMessage from "./useToastErrorMessage";
+import useToastSuccessMessage from "./useToastSuccessMessage";
 // types/validators
 import { z } from "zod";
 import { createNewUserSchema } from "src/validators/UserValidation";
@@ -14,6 +15,7 @@ export default function useFirebaseDb() {
   const { userProfile } = useFirebaseAuth();
   const database = getDatabase();
   const toastErrorMessage = useToastErrorMessage();
+  const toastSuccessMessage = useToastSuccessMessage();
 
   const handleError = (error: any, message: string) => {
     console.error(error);
@@ -24,11 +26,14 @@ export default function useFirebaseDb() {
     try {
       // generate uuid
       const _id = await push(child(ref(database), "/users")).key!;
+
       const userObj: CreateUserObj = {};
       userObj[_id] = { name };
       // validation
       z.record(z.string().min(1), createNewUserSchema).parse(userObj);
+
       await update(ref(database, userProfile?.uid + "/users"), userObj);
+      toastSuccessMessage("Succesfully created new user.");
     } catch (error) {
       handleError(error, "Something went wrong, check the logs.");
     }
