@@ -20,9 +20,12 @@ export default function SidebarDrawer({
       ModalProps={{
         keepMounted: true, // Better open performance on mobile.
       }}
+      PaperProps={{
+        sx: { padding: "1.25rem" },
+      }}
       sx={{
         display: { xs: "block" },
-        "& .MuiDrawer-paper": { boxSizing: "border-box", minWidth: "25vw" },
+        "& .MuiDrawer-paper": { boxSizing: "border-box", minWidth: "15vw" },
       }}
     >
       {children}

@@ -13,6 +13,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 // custom hook
 import useFirebaseAuth from "src/hooks/useFirebaseAuth";
+import SidebarMenuOptions from "./SidebarMenuOptions";
 
 export default function TopNavbar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -46,7 +47,7 @@ export default function TopNavbar() {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <div>Hello World</div>
+        <SidebarMenuOptions />
       </SidebarDrawer>
     </Box>
   );
