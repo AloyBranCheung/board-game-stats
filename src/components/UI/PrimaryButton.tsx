@@ -8,9 +8,10 @@ interface PrimaryButtonProps {
   children: React.ReactNode;
 }
 
-const StyledButton = styled(Button)({
+const StyledButton = styled(Button)(({ theme }) => ({
   color: "white",
-});
+  backgroundColor: theme.palette.secondary.main,
+}));
 
 export default function PrimaryButton({
   onClick,

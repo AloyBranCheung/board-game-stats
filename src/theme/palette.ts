@@ -1,10 +1,14 @@
 const PALETTE = {
   palette: {
     primary: {
-      main: "#B5D5C5",
+      main: "#AD8B73",
     },
     secondary: {
-      main: "#B08BBB",
+      main: "#CEAB93",
+    },
+    background: {
+      default: "#E3CAA5",
+      paper: "#FFFBE9",
     },
   },
 };
