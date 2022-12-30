@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 // components
 import SidebarDrawer from "./SidebarDrawer";
+import PrimaryButton from "../UI/PrimaryButton";
 // mui
-import {
-  Button,
-  Box,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Box, AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 // custom hook
 import useFirebaseAuth from "src/hooks/useFirebaseAuth";
@@ -34,13 +28,7 @@ export default function TopNavbar() {
             </IconButton>
             <Typography>Who will rule the world?</Typography>
           </Box>
-          <Button
-            variant="outlined"
-            sx={{ color: "white" }}
-            onClick={() => logout()}
-          >
-            Logout
-          </Button>
+          <PrimaryButton onClick={() => logout()}>Logout</PrimaryButton>
         </Toolbar>
       </AppBar>
       <SidebarDrawer
