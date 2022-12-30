@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-// jotai
-import { useAtom } from "jotai";
-import { isLoggedInAtom } from "src/store/AuthenticationAtom";
 // next-router
 import { useRouter } from "next/router";
 // react-toastify
