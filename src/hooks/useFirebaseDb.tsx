@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import useFirebaseAuth from "./useFirebaseAuth";
 import { getDatabase, ref, update, child, push, get } from "firebase/database";
 // react-toastify
@@ -16,14 +16,23 @@ export default function useFirebaseDb() {
   const database = getDatabase();
   const toastErrorMessage = useToastErrorMessage();
   const toastSuccessMessage = useToastSuccessMessage();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const handleError = (error: any, message: string) => {
     console.error(error);
     toastErrorMessage(message);
+    setIsError(true);
+  };
+
+  const handleSuccess = () => {
+    setIsLoading(false);
+    setIsError(false);
   };
 
   // create a new user
   const createNewUser = async (name: string) => {
+    setIsLoading(true);
     try {
       // generate uuid
       const _id = await push(child(ref(database), "/users")).key!;
@@ -35,6 +44,7 @@ export default function useFirebaseDb() {
 
       await update(ref(database, userProfile?.uid + "/users"), userObj);
       toastSuccessMessage("Succesfully created new user.");
+      handleSuccess();
     } catch (error) {
       handleError(error, "Something went wrong, check the logs.");
     }
@@ -42,17 +52,20 @@ export default function useFirebaseDb() {
 
   // read all users
   const readAllUsers = async () => {
+    setIsLoading(true);
     try {
       const getUsers = await get(
         child(ref(database), userProfile?.uid + "/users")
       );
       const responseData = await getUsers.val();
-      const listOfUsers: UserList = responseData.values();
+      const listOfUsers: UserList = Object.values(responseData);
+      handleSuccess();
       return listOfUsers;
     } catch (error) {
+      console.error(error);
       handleError(error, "Something went wrong retrieving users");
     }
   };
 
-  return { createNewUser, readAllUsers };
+  return { createNewUser, readAllUsers, isLoading, isError };
 }
