@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import useFirebaseAuth from "./useFirebaseAuth";
-import { getDatabase, ref, update, child, push, get } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  update,
+  child,
+  push,
+  get,
+  remove,
+} from "firebase/database";
 // react-toastify
 import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
@@ -38,7 +46,8 @@ export default function useFirebaseDb() {
       const _id = await push(child(ref(database), "/users")).key!;
 
       const userObj: CreateUserObj = {};
-      userObj[_id] = { name };
+      userObj[_id] = { name, _id };
+
       // validation
       z.record(z.string().min(1), createNewUserSchema).parse(userObj);
 
@@ -58,7 +67,10 @@ export default function useFirebaseDb() {
         child(ref(database), userProfile?.uid + "/users")
       );
       const responseData = await getUsers.val();
-      const listOfUsers: UserList = Object.values(responseData);
+      let listOfUsers: UserList = [];
+      if (responseData) {
+        listOfUsers = Object.values(responseData);
+      }
       handleSuccess();
       return listOfUsers;
     } catch (error) {
@@ -67,5 +79,19 @@ export default function useFirebaseDb() {
     }
   };
 
-  return { createNewUser, readAllUsers, isLoading, isError };
+  // delete user
+  const deleteSingleUser = async (userIdentifier: string) => {
+    setIsLoading(true);
+    try {
+      await remove(
+        child(ref(database), `${userProfile?.uid}/users/${userIdentifier}`)
+      );
+      handleSuccess();
+    } catch (error) {
+      console.error(error);
+      handleError(error, "Something went wrong deleting user.");
+    }
+  };
+
+  return { createNewUser, readAllUsers, deleteSingleUser, isLoading, isError };
 }

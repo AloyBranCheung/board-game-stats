@@ -23,6 +23,7 @@ export default function Users() {
   const toastErrorMessage = useToastErrorMessage();
   const [userList, setUserList] = useAtom(userListAtom);
 
+  // infinite loop if dependencies are added
   useEffect(() => {
     (async () => {
       try {
@@ -35,7 +36,6 @@ export default function Users() {
         toastErrorMessage("Something went wrong fetching users.");
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

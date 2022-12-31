@@ -1,6 +1,7 @@
 export interface CreateUserObj {
   [key: string]: {
     name: string;
+    _id: string;
   };
 }
 
@@ -10,7 +11,7 @@ export interface BoardGameTracking {
 }
 
 export interface User {
-  [key: string]: string | number | BoardGameTracking;
+  [key: string]: string | number | BoardGameTracking | CreateUserObj;
 }
 
 export type UserList = User[];
