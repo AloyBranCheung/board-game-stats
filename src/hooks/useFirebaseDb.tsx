@@ -1,13 +1,13 @@
 import React from "react";
 import useFirebaseAuth from "./useFirebaseAuth";
-import { getDatabase, ref, update, child, push } from "firebase/database";
+import { getDatabase, ref, update, child, push, get } from "firebase/database";
 // react-toastify
 import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
 // types/validators
 import { z } from "zod";
 import { createNewUserSchema } from "src/validators/UserValidation";
-import { CreateUserObj } from "src/@types/UserTypes";
+import { CreateUserObj, UserList } from "src/@types/UserTypes";
 
 // https://board-game-stats-3420c-default-rtdb.firebaseio.com/
 
@@ -22,6 +22,7 @@ export default function useFirebaseDb() {
     toastErrorMessage(message);
   };
 
+  // create a new user
   const createNewUser = async (name: string) => {
     try {
       // generate uuid
@@ -39,5 +40,19 @@ export default function useFirebaseDb() {
     }
   };
 
-  return { createNewUser };
+  // read all users
+  const readAllUsers = async () => {
+    try {
+      const getUsers = await get(
+        child(ref(database), userProfile?.uid + "/users")
+      );
+      const responseData = await getUsers.val();
+      const listOfUsers: UserList = responseData.values();
+      return listOfUsers;
+    } catch (error) {
+      handleError(error, "Something went wrong retrieving users");
+    }
+  };
+
+  return { createNewUser, readAllUsers };
 }
