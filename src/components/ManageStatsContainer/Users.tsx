@@ -12,6 +12,10 @@ import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: "1.25rem",
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  gap: "1.25rem",
 }));
 
 export default function Users() {
