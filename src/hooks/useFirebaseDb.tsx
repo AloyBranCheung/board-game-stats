@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import useFirebaseAuth from "./useFirebaseAuth";
 import {
   getDatabase,
@@ -14,8 +14,9 @@ import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
 // types/validators
 import { z } from "zod";
-import { createNewUserSchema } from "src/validators/UserValidation";
+import { createNewUserSubmitToDb } from "src/validators/UserValidation";
 import { CreateUserObj, UserList } from "src/@types/UserTypes";
+import { fromZodError } from "zod-validation-error";
 
 // https://board-game-stats-3420c-default-rtdb.firebaseio.com/
 
@@ -49,12 +50,18 @@ export default function useFirebaseDb() {
       userObj[_id] = { name, _id };
 
       // validation
-      z.record(z.string().min(1), createNewUserSchema).parse(userObj);
+      z.record(z.string().min(1), createNewUserSubmitToDb).parse(userObj);
 
       await update(ref(database, userProfile?.uid + "/users"), userObj);
       toastSuccessMessage("Succesfully created new user.");
       handleSuccess();
-    } catch (error) {
+      return _id;
+    } catch (error: any) {
+      // if zod error
+      const validationError = fromZodError(error);
+      if (validationError) {
+        handleError(validationError, "Zod validation error.");
+      }
       handleError(error, "Something went wrong, check the logs.");
     }
   };
@@ -70,14 +77,35 @@ export default function useFirebaseDb() {
       let listOfUsers: UserList = [];
       if (responseData) {
         listOfUsers = Object.values(responseData);
+        handleSuccess();
+        return listOfUsers;
       }
-      handleSuccess();
-      return listOfUsers;
     } catch (error) {
       console.error(error);
       handleError(error, "Something went wrong retrieving users");
     }
   };
+
+  // read single user
+  const readSingleUser = async (_id: string) => {
+    setIsLoading(true);
+    try {
+      const getUsers = await get(
+        child(ref(database), `${userProfile?.uid}/users/${_id}`)
+      );
+      const responseData = await getUsers.val();
+      if (responseData) {
+        return responseData;
+      }
+      handleSuccess();
+    } catch (error) {
+      console.error(error);
+      handleError(error, "Something went wrong retrieving that user.");
+    }
+  };
+
+  // update single user
+  const updateSingleUser = async () => {};
 
   // delete user
   const deleteSingleUser = async (userIdentifier: string) => {
@@ -93,5 +121,13 @@ export default function useFirebaseDb() {
     }
   };
 
-  return { createNewUser, readAllUsers, deleteSingleUser, isLoading, isError };
+  return {
+    createNewUser,
+    readSingleUser,
+    readAllUsers,
+    updateSingleUser,
+    deleteSingleUser,
+    isLoading,
+    isError,
+  };
 }
