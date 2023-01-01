@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 // jotai
 import { useAtom } from "jotai";
 import { isSidebarOpenAtom } from "src/store/MainLayoutStore";

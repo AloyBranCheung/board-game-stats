@@ -3443,6 +3443,11 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
+zod-validation-error@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/zod-validation-error/-/zod-validation-error-0.3.0.tgz#59118411ce24780e7a0380e89945b147cb8fe877"
+  integrity sha512-M0g8+1fgEgz6do82lA90v1IA4WXOK7TxAHqohAPktNJbTacl7tI74JS38AUWJPIJgDjUkhtEuLkUUFl3uhneyA==
+
 zod@^3.20.2:
   version "3.20.2"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.20.2.tgz#068606642c8f51b3333981f91c0a8ab37dfc2807"

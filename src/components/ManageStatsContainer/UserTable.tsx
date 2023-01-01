@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // custom hooks
 import useFirebaseDb from "src/hooks/useFirebaseDb";
+import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // components
 import AlertDialog from "../UI/AlertDialog";
 import TableCRUDActions from "../UI/Table/TableCRUDActions";
@@ -28,6 +29,7 @@ export default function UserTable({ data }: UserTableProps) {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<z.infer<typeof createNewUserSchema>>({
     resolver: zodResolver(createNewUserSchema),
@@ -35,8 +37,10 @@ export default function UserTable({ data }: UserTableProps) {
       name: "",
     },
   });
+  const toastErrorMessage = useToastErrorMessage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { createNewUser, deleteSingleUser, isError } = useFirebaseDb();
+  const { createNewUser, deleteSingleUser, isError, readSingleUser } =
+    useFirebaseDb();
   const [userList, setUserList] = useAtom(userListAtom);
 
   // save row edits
@@ -45,13 +49,25 @@ export default function UserTable({ data }: UserTableProps) {
   };
 
   // create new row
-  const handleCreateNewUser = (data: z.infer<typeof createNewUserSchema>) => {
-    createNewUser(data.name);
+  const handleCreateNewUser = async (
+    data: z.infer<typeof createNewUserSchema>
+  ) => {
+    try {
+      const newUserId = await createNewUser(data.name);
+      if (newUserId) {
+        const newUser: User = await readSingleUser(newUserId);
+        setUserList((prev) => [...prev, newUser]);
+        setIsDialogOpen(false);
+        reset();
+      }
+    } catch (error) {
+      console.error(error);
+      toastErrorMessage("Something went wrong creating the user.");
+    }
   };
 
   // delete row
   const handleDeleteRow = (row: MRT_Row<User>) => {
-    console.log("delete clicked", console.log(row.original._id));
     deleteSingleUser(row.original._id.toString());
     userList.splice(row.index, 1);
     setUserList([...userList]);

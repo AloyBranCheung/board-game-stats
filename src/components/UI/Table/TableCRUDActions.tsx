@@ -3,13 +3,14 @@ import React from "react";
 import { Tooltip, IconButton, Box } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-// types 
+// types
 import { User } from "src/@types/UserTypes";
 import { MRT_Row, MRT_TableInstance } from "material-react-table";
 
 interface TableCRUDActionsProps {
   row: MRT_Row<User>;
   table: MRT_TableInstance<User>;
+  // eslint-disable-next-line no-unused-vars
   handleDeleteRow: (row: MRT_Row<User>) => void;
 }
 

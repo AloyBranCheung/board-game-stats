@@ -10,7 +10,7 @@ import UserTable from "./UserTable";
 import useFirebaseDb from "src/hooks/useFirebaseDb";
 import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(() => ({
   padding: "1.25rem",
   display: "flex",
   flexDirection: "column",
@@ -36,6 +36,7 @@ export default function Users() {
         toastErrorMessage("Something went wrong fetching users.");
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
