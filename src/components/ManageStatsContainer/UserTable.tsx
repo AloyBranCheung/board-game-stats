@@ -14,11 +14,14 @@ import TableCRUDActions from "../UI/Table/TableCRUDActions";
 import PrimaryButton from "../UI/PrimaryButton";
 import Input from "../UI/form-components/Input";
 // Material React Table
-import MaterialReactTable, { MRT_Row } from "material-react-table";
+import MaterialReactTable, {
+  MRT_Row,
+  MaterialReactTableProps,
+} from "material-react-table";
 import { userTableColumns } from "src/components/ManageStatsContainer/config";
 // types
 import { z } from "zod";
-import { User, UserList } from "src/@types/UserTypes";
+import { User, UserList, UserObj } from "src/@types/UserTypes";
 import { createNewUserSchema } from "src/validators/UserValidation";
 
 interface UserTableProps {
@@ -39,14 +42,27 @@ export default function UserTable({ data }: UserTableProps) {
   });
   const toastErrorMessage = useToastErrorMessage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { createNewUser, deleteSingleUser, isError, readSingleUser } =
-    useFirebaseDb();
+  const {
+    createNewUser,
+    deleteSingleUser,
+    isError,
+    readSingleUser,
+    updateSingleUser,
+  } = useFirebaseDb();
   const [userList, setUserList] = useAtom(userListAtom);
 
   // save row edits
-  const handleRowEditSave = () => {
-    console.log("saved");
-  };
+  const handleRowEditSave: MaterialReactTableProps<User>["onEditingRowSave"] =
+    async ({ exitEditingMode, row, values }) => {
+      const _id = await row.original._id.toString();
+      // update backend
+      updateSingleUser(_id, { ...row.original, ...values } as UserObj);
+      // update local state
+      userList[row.index] = { ...row.original, ...values };
+      setUserList([...userList]);
+      //required to exit editing mode and close modal
+      exitEditingMode();
+    };
 
   // create new row
   const handleCreateNewUser = async (

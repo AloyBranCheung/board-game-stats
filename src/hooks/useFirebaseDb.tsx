@@ -14,8 +14,11 @@ import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
 // types/validators
 import { z } from "zod";
-import { createNewUserSubmitToDb } from "src/validators/UserValidation";
-import { CreateUserObj, UserList } from "src/@types/UserTypes";
+import {
+  createNewUserSubmitToDb,
+  createNewUserSchema,
+} from "src/validators/UserValidation";
+import { CreateUserObj, UserList, UserObj } from "src/@types/UserTypes";
 import { fromZodError } from "zod-validation-error";
 
 // https://board-game-stats-3420c-default-rtdb.firebaseio.com/
@@ -29,9 +32,17 @@ export default function useFirebaseDb() {
   const [isError, setIsError] = useState(false);
 
   const handleError = (error: any, message: string) => {
-    console.error(error);
-    toastErrorMessage(message);
-    setIsError(true);
+    // if Zod error
+    const validationError = fromZodError(error);
+    if (validationError) {
+      console.error(error);
+      toastErrorMessage("Zod validation error.");
+      setIsError(true);
+    } else {
+      console.error(error);
+      toastErrorMessage(message);
+      setIsError(true);
+    }
   };
 
   const handleSuccess = () => {
@@ -57,11 +68,6 @@ export default function useFirebaseDb() {
       handleSuccess();
       return _id;
     } catch (error: any) {
-      // if zod error
-      const validationError = fromZodError(error);
-      if (validationError) {
-        handleError(validationError, "Zod validation error.");
-      }
       handleError(error, "Something went wrong, check the logs.");
     }
   };
@@ -105,7 +111,17 @@ export default function useFirebaseDb() {
   };
 
   // update single user
-  const updateSingleUser = async () => {};
+  const updateSingleUser = async (_id: string, value: UserObj) => {
+    setIsLoading(true);
+    try {
+      // validate
+      createNewUserSchema.parse(value);
+      await update(ref(database, `${userProfile?.uid}/users/${_id}`), value);
+      handleSuccess();
+    } catch (error) {
+      handleError(error, "Something went wrong updating single user.");
+    }
+  };
 
   // delete user
   const deleteSingleUser = async (userIdentifier: string) => {
