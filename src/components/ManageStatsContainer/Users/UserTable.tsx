@@ -9,16 +9,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useFirebaseDb from "src/hooks/useFirebaseDb";
 import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // components
-import AlertDialog from "../UI/AlertDialog";
-import TableCRUDActions from "../UI/Table/TableCRUDActions";
-import PrimaryButton from "../UI/PrimaryButton";
-import Input from "../UI/form-components/Input";
+import AlertDialog from "src/components/UI/AlertDialog";
+import TableCRUDActions from "./UserTableCRUDActions";
+import PrimaryButton from "src/components/UI/PrimaryButton";
+import Input from "src/components/UI/form-components/Input";
 // Material React Table
 import MaterialReactTable, {
   MRT_Row,
   MaterialReactTableProps,
 } from "material-react-table";
-import { userTableColumns } from "src/components/ManageStatsContainer/config";
+import { userTableColumns } from "src/components/ManageStatsContainer/Users/config";
 // types
 import { z } from "zod";
 import { User, UserList, UserObj } from "src/@types/UserTypes";
