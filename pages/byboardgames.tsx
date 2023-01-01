@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function byboardgames() {
+export default function ByBoardGames() {
   return <div>byboardgames</div>;
 }

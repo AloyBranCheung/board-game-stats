@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
+// jotai
+import { useAtom } from "jotai";
+import { isSidebarOpenAtom } from "src/store/MainLayoutStore";
 // components
 import SidebarDrawer from "./SidebarDrawer";
 import PrimaryButton from "../UI/PrimaryButton";
@@ -17,7 +20,7 @@ import useFirebaseAuth from "src/hooks/useFirebaseAuth";
 import SidebarMenuOptions from "./SidebarMenuOptions";
 
 export default function TopNavbar() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useAtom(isSidebarOpenAtom);
   const { logout } = useFirebaseAuth();
   const trigger = useScrollTrigger({
     disableHysteresis: true,
