@@ -16,11 +16,11 @@ export interface UserObj {
 
 export type FullUserObj = Merge<UserObj, BoardGamesTracking>;
 export interface CreateUserObj {
-  [key: string]: UserObj;
+  [_id: string]: UserObj;
 }
 
 export interface User {
-  [key: string]: string | number | BoardGameTracking | CreateUserObj;
+  [_id: string]: string | number | BoardGameTracking | CreateUserObj;
 }
 
 export type UserList = User[];

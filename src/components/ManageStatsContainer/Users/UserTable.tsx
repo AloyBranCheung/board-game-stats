@@ -10,9 +10,9 @@ import useFirebaseDb from "src/hooks/useFirebaseDb";
 import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // components
 import AlertDialog from "src/components/UI/AlertDialog";
-import TableCRUDActions from "./UserTableCRUDActions";
 import PrimaryButton from "src/components/UI/PrimaryButton";
 import Input from "src/components/UI/form-components/Input";
+import TableCRUDActions from "src/components/UI/Tables/TableCRUDActions";
 // Material React Table
 import MaterialReactTable, {
   MRT_Row,

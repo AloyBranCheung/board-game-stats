@@ -5,6 +5,7 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 // components
 import ManagementCard from "src/components/UI/ManagementCard";
+import OverallGameHistoryTable from "./OverallGameHistoryTable";
 
 export default function BoardGameHistoryTable() {
   const { isLoading } = useFirebaseBoardGameDb();
@@ -17,7 +18,7 @@ export default function BoardGameHistoryTable() {
           <CircularProgress />
         </Box>
       ) : (
-        <div>Hello World</div>
+        <OverallGameHistoryTable />
       )}
     </ManagementCard>
   );
