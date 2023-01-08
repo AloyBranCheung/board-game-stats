@@ -16,6 +16,7 @@ import loginSchema from "src/validators/LoginValidation";
 export default function LoginScreen() {
   const router = useRouter();
   const { login, isLoading, isError } = useFirebaseAuth();
+
   const {
     control,
     handleSubmit,

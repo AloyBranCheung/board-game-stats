@@ -12,11 +12,11 @@ export const overallGameHistoryTableColumns: MRT_ColumnDef<BoardGameHistory>[] =
       accessorKey: "boardGame",
     },
     {
-      header: "Winner(s)",
+      header: "Winner",
       accessorKey: "winner",
     },
     {
-      header: "Loser(s)",
+      header: "Loser",
       accessorKey: "loser",
     },
     {
