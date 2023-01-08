@@ -23,7 +23,7 @@ import { fromZodError } from "zod-validation-error";
 
 // https://board-game-stats-3420c-default-rtdb.firebaseio.com/
 
-export default function useFirebaseDb() {
+export default function useFirebaseUserDb() {
   const { userProfile } = useFirebaseAuth();
   const database = getDatabase();
   const toastErrorMessage = useToastErrorMessage();
