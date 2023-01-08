@@ -1,70 +1,57 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // firebase hook
-import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
-// react-forms
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "src/components/UI/form-components/Input";
-import SelectReactForm from "src/components/UI/form-components/SelectReactForm";
-//
-import { MenuItem } from "@mui/material";
+import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
+// toast-error-message
+import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // material react table
 import MaterialReactTable from "material-react-table";
 // table config
 import { overallGameHistoryTableColumns } from "./config";
-// dayjs
-import dayjs from "dayjs";
+
 // mock data
 import { DUM_OVERALL_BOARD_GAME_HISTORY_DATA } from "src/mocks/overallBoardGameHistoryMockData";
-// types/validators
-import { z } from "zod";
-import { createNewBoardGameHistorySchema } from "src/validators/BoardGameHistoryValidation";
+
 // components
 import TableCRUDActions from "src/components/UI/Tables/TableCRUDActions";
 import PrimaryButton from "src/components/UI/PrimaryButton";
-import AlertDialog from "src/components/UI/AlertDialog";
-import DatePicker from "src/components/UI/form-components/DatePicker";
+import AddBoardGameOptions from "./AddBoardGameOptions";
+import AddGameHistory from "./AddGameHistory";
 
 export default function OverallGameHistoryTable() {
-  const { isLoading, isError, createBoardGameHistory } =
-    useFirebaseBoardGameDb();
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(createNewBoardGameHistorySchema),
-    defaultValues: {
-      datePicked: dayjs(new Date()),
-      boardGame: "",
-      winner: "",
-      loser: "",
-      comments: "",
-    },
-  });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // state
+  const [users, setUsers] = useState<string[]>([]);
+  const [boardGamesOptions, setBoardGamesOptions] = useState<string[]>([]);
+  const [isAddHistory, setIsAddHistory] = useState(false); // add history dialog
+  const [isAddBoardGameOption, setIsAddBoardGameOption] = useState(false); // add board game dialog
+  // hooks
+  const toastErrorMessage = useToastErrorMessage();
 
+  const { readAllUsers } = useFirebaseUserDb();
+
+  // useEffect
+  useEffect(() => {
+    (async function () {
+      try {
+        // board game response
+        setBoardGamesOptions(["testdefaultstate"]);
+        // user response
+        const userResponse = await readAllUsers();
+        const users = userResponse?.map((user) => user.name);
+        setUsers(users as string[]);
+      } catch (error) {
+        console.error(error);
+        toastErrorMessage("Error fetching users.");
+      }
+    })();
+  }, [readAllUsers, toastErrorMessage]);
+
+  // fns
   const handleRowEditSave = () => {
     console.log("row save");
   };
 
   const handleDeleteRow = () => {
     console.log("row delete");
-  };
-
-  const handleAddHistory = (
-    data: z.infer<typeof createNewBoardGameHistorySchema>
-  ) => {
-    const dataToSubmit = {
-      ...data,
-      datePicked: data.datePicked.format("YYYY-MM-DD"),
-    };
-    try {
-      console.log(dataToSubmit);
-    } catch (error) {
-      console.log(dataToSubmit);
-    }
   };
 
   return (
@@ -82,56 +69,28 @@ export default function OverallGameHistoryTable() {
           />
         )}
         renderTopToolbarCustomActions={() => (
-          <PrimaryButton onClick={() => setIsDialogOpen(true)}>
-            Add History
-          </PrimaryButton>
+          <>
+            <PrimaryButton onClick={() => setIsAddHistory(true)}>
+              Add History
+            </PrimaryButton>
+            <PrimaryButton onClick={() => setIsAddBoardGameOption(true)}>
+              Add Board Game Option
+            </PrimaryButton>
+          </>
         )}
       />
-      <AlertDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        dialogTitle="Add A New Record"
-        onCancelButtonClick={() => setIsDialogOpen(false)}
-        cancelButtonText="Nah"
-        acceptButtonText="Yah"
-        acceptButtonType="submit"
-        onSubmit={handleSubmit(handleAddHistory)}
-      >
-        <DatePicker
-          name="datePicked"
-          control={control}
-          isError={typeof errors.datePicked?.message === "string"}
-          errorMessage={
-            typeof errors.datePicked?.message === "string"
-              ? errors.datePicked?.message
-              : undefined
-          }
-        />
-        <SelectReactForm name="boardGame" control={control} label="Board Game">
-          <MenuItem value="firebasedb">
-            FirebaseDb find all users and values
-          </MenuItem>
-        </SelectReactForm>
-        <SelectReactForm name="winner" control={control} label="Winner">
-          <MenuItem value="firebasedb">
-            FirebaseDb find all users and values
-          </MenuItem>
-        </SelectReactForm>
-        <SelectReactForm name="loser" control={control} label="Loser">
-          <MenuItem value="firebasedb">
-            FirebaseDb find all users and values
-          </MenuItem>
-        </SelectReactForm>
-        <Input
-          name="comments"
-          control={control}
-          label="Comment?"
-          isError={
-            typeof errors.comments?.message === "string" || (isError && true)
-          }
-          errorMessage={errors.comments?.message}
-        />
-      </AlertDialog>
+
+      <AddGameHistory
+        isAddHistory={isAddHistory}
+        setIsAddHistory={setIsAddHistory}
+        users={users}
+        boardGamesOptions={boardGamesOptions}
+      />
+
+      <AddBoardGameOptions
+        isAddBoardGameOption={isAddBoardGameOption}
+        setIsAddBoardGameOption={setIsAddBoardGameOption}
+      />
     </>
   );
 }

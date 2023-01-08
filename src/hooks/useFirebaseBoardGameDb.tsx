@@ -1,11 +1,16 @@
 import { useState } from "react";
-//
+// toast-hooks
 import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
+// dayjs
+import dayjs from "dayjs";
 // firebase
 import useFirebaseAuth from "./useFirebaseAuth";
 import { getDatabase } from "firebase/database";
 import { handleDbError, handleDbSuccess } from "./utils";
+// types/validators
+import { z } from "zod";
+import { createNewBoardGameHistorySchema } from "src/validators/BoardGameHistoryValidation";
 
 export default function useFirebaseBoardGameDb() {
   const toastErrorMessageFn = useToastErrorMessage();
@@ -19,9 +24,16 @@ export default function useFirebaseBoardGameDb() {
   const directoryUrl = userProfile ? `${userProfile.uid}/boardGameHistory` : "";
 
   // create single board game win/loss obj
-  const createBoardGameHistory = async () => {
+  const createBoardGameHistory = async (
+    data: z.infer<typeof createNewBoardGameHistorySchema>
+  ) => {
     setIsLoading(true);
+    const dataToSubmit = {
+      ...data,
+      datePicked: data.datePicked.format("YYYY-MM-DD"),
+    };
     try {
+      console.log("firebase", dataToSubmit);
       handleDbSuccess(
         "Successfully created game history.",
         toastSuccessMessageFn,
@@ -29,6 +41,12 @@ export default function useFirebaseBoardGameDb() {
         setIsError
       );
     } catch (error) {}
+  };
+
+  // create add board game option str
+  const createBoardGameOption = async (boardGameName: string) => {
+    setIsLoading(true);
+    console.log("firebase", boardGameName);
   };
 
   // read single board game win/loss obj
@@ -39,5 +57,5 @@ export default function useFirebaseBoardGameDb() {
 
   // delete single board game history win/loss obj
 
-  return { isLoading, isError, createBoardGameHistory };
+  return { isLoading, isError, createBoardGameHistory, createBoardGameOption };
 }

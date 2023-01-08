@@ -1,4 +1,5 @@
 import * as React from "react";
+// mui
 import { Select } from "@mui/material";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
@@ -12,6 +13,8 @@ import {
   Path,
   UnPackAsyncDefaultValues,
 } from "react-hook-form";
+// components
+import ErrorMessage from "./ErrorMessage";
 
 interface SelectProps<FV extends FieldValues>
   extends Omit<ControllerProps<FV>, "render" | "name"> {
@@ -19,6 +22,8 @@ interface SelectProps<FV extends FieldValues>
   control: Control<FV>;
   children: React.ReactNode; // MenuItems with value props and <>...text</>
   label: string; // label of select
+  isError: boolean | undefined;
+  errorMessage: string | undefined;
 }
 
 export default function SelectReactForm<FV extends FieldValues>({
@@ -26,20 +31,25 @@ export default function SelectReactForm<FV extends FieldValues>({
   control,
   children,
   label,
+  isError,
+  errorMessage,
 }: SelectProps<FV>) {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field: { onChange, value } }) => (
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl fullWidth>
-            <InputLabel>{label}</InputLabel>
-            <Select value={value} label={label} onChange={onChange}>
-              {children}
-            </Select>
-          </FormControl>
-        </Box>
+        <>
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel>{label}</InputLabel>
+              <Select value={value} label={label} onChange={onChange}>
+                {children}
+              </Select>
+            </FormControl>
+          </Box>
+          {isError && <ErrorMessage errorMessage={errorMessage} />}
+        </>
       )}
     />
   );
