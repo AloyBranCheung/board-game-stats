@@ -1,9 +1,10 @@
+import dayjs from "dayjs";
 export interface BoardGameHistory {
-  date: string; // unix
+  datePicked: dayjs.Dayjs; // unix
   boardGame: string;
-  winners: string[]; // _id
-  losers: string[]; // _id
-  comments: string;
+  winner: string; // _id
+  loser: string; // _id
+  comments?: string;
 }
 
 export interface OverallGameHistory {
