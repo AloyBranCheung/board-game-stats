@@ -56,7 +56,7 @@ export default function UserTable({ data }: UserTableProps) {
     async ({ exitEditingMode, row, values }) => {
       const _id = await row.original._id.toString();
       // update backend
-      updateSingleUser(_id, { ...row.original, ...values } as UserObj);
+      await updateSingleUser(_id, { ...row.original, ...values } as UserObj);
       // update local state
       userList[row.index] = { ...row.original, ...values };
       setUserList([...userList]);
@@ -83,8 +83,8 @@ export default function UserTable({ data }: UserTableProps) {
   };
 
   // delete row
-  const handleDeleteRow = (row: MRT_Row<User>) => {
-    deleteSingleUser(row.original._id.toString());
+  const handleDeleteRow = async (row: MRT_Row<User>) => {
+    await deleteSingleUser(row.original._id.toString());
     userList.splice(row.index, 1);
     setUserList([...userList]);
   };

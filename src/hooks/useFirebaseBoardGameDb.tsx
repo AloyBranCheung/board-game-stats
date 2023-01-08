@@ -12,6 +12,7 @@ import {
   set,
   child,
   push,
+  remove,
 } from "firebase/database";
 import { handleDbError, handleDbSuccess } from "./utils";
 
@@ -58,6 +59,7 @@ export default function useFirebaseBoardGameDb() {
   const createBoardGameOption = async (
     boardGameName: z.infer<typeof boardGameOptionSchema>
   ) => {
+    setIsLoading(true);
     const boardGameOptionsDestination =
       await `${userProfile?.uid}/boardGameOptions`;
     const dbRef = await ref(database, boardGameOptionsDestination);
@@ -67,7 +69,6 @@ export default function useFirebaseBoardGameDb() {
       [newId]: { _id: newId, ...boardGameName },
     };
 
-    setIsLoading(true);
     try {
       //
       const getArrayBoardGameNames = await get(
@@ -98,6 +99,7 @@ export default function useFirebaseBoardGameDb() {
         setIsError
       );
     } catch (error) {
+      console.error(error);
       handleDbError(
         error,
         "Error creating board game option.",
@@ -114,7 +116,39 @@ export default function useFirebaseBoardGameDb() {
 
   // update single board game history win/loss obj
 
+  // delete single board game option
+  const deleteBoardGameOption = async (_id: string) => {
+    setIsLoading(true);
+    try {
+      console.log("firebase", _id);
+      await remove(
+        child(ref(database), `${userProfile?.uid}/boardGameOptions/${_id}`)
+      );
+      handleDbSuccess(
+        "Successfully removed board game option.",
+        toastSuccessMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    } catch (error) {
+      console.error(error);
+      handleDbError(
+        error,
+        "Error deleting board game option.",
+        toastErrorMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    }
+  };
+
   // delete single board game history win/loss obj
 
-  return { isLoading, isError, createBoardGameHistory, createBoardGameOption };
+  return {
+    isLoading,
+    isError,
+    createBoardGameHistory,
+    createBoardGameOption,
+    deleteBoardGameOption,
+  };
 }

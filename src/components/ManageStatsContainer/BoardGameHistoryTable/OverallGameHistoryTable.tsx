@@ -16,6 +16,7 @@ import TableCRUDActions from "src/components/UI/Tables/TableCRUDActions";
 import PrimaryButton from "src/components/UI/PrimaryButton";
 import AddBoardGameOptions from "./AddBoardGameOptions";
 import AddGameHistory from "./AddGameHistory";
+import DeleteBoardGameOption from "./DeleteBoardGameOption";
 
 export default function OverallGameHistoryTable() {
   // state
@@ -43,7 +44,8 @@ export default function OverallGameHistoryTable() {
         toastErrorMessage("Error fetching users.");
       }
     })();
-  }, [readAllUsers, toastErrorMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setUsers]);
 
   // fns
   const handleRowEditSave = () => {
@@ -91,6 +93,8 @@ export default function OverallGameHistoryTable() {
         isAddBoardGameOption={isAddBoardGameOption}
         setIsAddBoardGameOption={setIsAddBoardGameOption}
       />
+
+      <DeleteBoardGameOption />
     </>
   );
 }
