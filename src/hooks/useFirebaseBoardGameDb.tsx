@@ -2,15 +2,26 @@ import { useState } from "react";
 // toast-hooks
 import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
-// dayjs
-import dayjs from "dayjs";
 // firebase
 import useFirebaseAuth from "./useFirebaseAuth";
-import { getDatabase } from "firebase/database";
+import {
+  getDatabase,
+  update,
+  ref,
+  get,
+  set,
+  child,
+  push,
+} from "firebase/database";
 import { handleDbError, handleDbSuccess } from "./utils";
+
 // types/validators
 import { z } from "zod";
-import { createNewBoardGameHistorySchema } from "src/validators/BoardGameHistoryValidation";
+import {
+  createNewBoardGameHistorySchema,
+  boardGameOptionSchema,
+  boardGameOptionDbSchema,
+} from "src/validators/BoardGameHistoryValidation";
 
 export default function useFirebaseBoardGameDb() {
   const toastErrorMessageFn = useToastErrorMessage();
@@ -44,9 +55,57 @@ export default function useFirebaseBoardGameDb() {
   };
 
   // create add board game option str
-  const createBoardGameOption = async (boardGameName: string) => {
+  const createBoardGameOption = async (
+    boardGameName: z.infer<typeof boardGameOptionSchema>
+  ) => {
+    const boardGameOptionsDestination =
+      await `${userProfile?.uid}/boardGameOptions`;
+    const dbRef = await ref(database, boardGameOptionsDestination);
+    const newId = (await push(child(ref(database), boardGameOptionsDestination))
+      .key) as string;
+    const newBoardGameOptionForDb = {
+      [newId]: { _id: newId, ...boardGameName },
+    };
+
     setIsLoading(true);
-    console.log("firebase", boardGameName);
+    try {
+      //
+      const getArrayBoardGameNames = await get(
+        ref(database, boardGameOptionsDestination)
+      );
+      const boardGameNames = getArrayBoardGameNames.val();
+
+      // data validation
+      z.record(
+        z.string().min(1, { message: "At least 1 character needed for _id." }),
+        boardGameOptionDbSchema
+      ).parse(newBoardGameOptionForDb);
+
+      // POST to db
+      if (boardGameNames === null) {
+        await set(dbRef, newBoardGameOptionForDb);
+      } else {
+        await update(
+          child(ref(database), boardGameOptionsDestination),
+          newBoardGameOptionForDb
+        );
+      }
+
+      handleDbSuccess(
+        "Successfully added board game option.",
+        toastSuccessMessageFn,
+        setIsLoading,
+        setIsError
+      );
+    } catch (error) {
+      handleDbError(
+        error,
+        "Error creating board game option.",
+        toastErrorMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    }
   };
 
   // read single board game win/loss obj

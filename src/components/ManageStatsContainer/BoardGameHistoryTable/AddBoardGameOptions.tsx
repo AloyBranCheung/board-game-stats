@@ -9,12 +9,8 @@ import Input from "src/components/UI/form-components/Input";
 // components
 import AlertDialog from "src/components/UI/AlertDialog";
 import LoadingSpinner from "src/components/UI/LoadingSpinner";
-
-const boardGameOptionSchema = z.object({
-  boardGameName: z
-    .string()
-    .min(1, { message: "At least 1 character required." }),
-});
+// types/validators
+import { boardGameOptionSchema } from "src/validators/BoardGameHistoryValidation";
 
 interface AddBoardGameOptionsProps {
   isAddBoardGameOption: boolean;
@@ -45,7 +41,7 @@ export default function AddBoardGameOptions({
     data: z.infer<typeof boardGameOptionSchema>
   ) => {
     try {
-      await createBoardGameOption(data.boardGameName);
+      await createBoardGameOption(data);
       reset();
     } catch (error) {
       console.error(error);

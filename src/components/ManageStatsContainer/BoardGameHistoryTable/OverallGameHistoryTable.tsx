@@ -7,10 +7,10 @@ import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 import MaterialReactTable from "material-react-table";
 // table config
 import { overallGameHistoryTableColumns } from "./config";
-
 // mock data
 import { DUM_OVERALL_BOARD_GAME_HISTORY_DATA } from "src/mocks/overallBoardGameHistoryMockData";
-
+// mui
+import { Box } from "@mui/material";
 // components
 import TableCRUDActions from "src/components/UI/Tables/TableCRUDActions";
 import PrimaryButton from "src/components/UI/PrimaryButton";
@@ -69,14 +69,14 @@ export default function OverallGameHistoryTable() {
           />
         )}
         renderTopToolbarCustomActions={() => (
-          <>
+          <Box display="flex" gap="1.25rem">
             <PrimaryButton onClick={() => setIsAddHistory(true)}>
               Add History
             </PrimaryButton>
             <PrimaryButton onClick={() => setIsAddBoardGameOption(true)}>
               Add Board Game Option
             </PrimaryButton>
-          </>
+          </Box>
         )}
       />
 
