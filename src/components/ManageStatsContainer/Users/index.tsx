@@ -7,7 +7,7 @@ import { Card, Box, styled, Typography, CircularProgress } from "@mui/material";
 // components
 import UserTable from "./UserTable";
 // custom hooks
-import useFirebaseDb from "src/hooks/useFirebaseDb";
+import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
 import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 
 const StyledCard = styled(Card)(() => ({
@@ -19,7 +19,7 @@ const StyledCard = styled(Card)(() => ({
 }));
 
 export default function Users() {
-  const { readAllUsers, isLoading } = useFirebaseDb();
+  const { readAllUsers, isLoading } = useFirebaseUserDb();
   const toastErrorMessage = useToastErrorMessage();
   const [userList, setUserList] = useAtom(userListAtom);
 

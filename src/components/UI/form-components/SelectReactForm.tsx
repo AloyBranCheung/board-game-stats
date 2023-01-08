@@ -1,0 +1,46 @@
+import * as React from "react";
+import { Select } from "@mui/material";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+// react-hook-form
+import {
+  Controller,
+  Control,
+  FieldValues,
+  ControllerProps,
+  Path,
+  UnPackAsyncDefaultValues,
+} from "react-hook-form";
+
+interface SelectProps<FV extends FieldValues>
+  extends Omit<ControllerProps<FV>, "render" | "name"> {
+  name: Path<UnPackAsyncDefaultValues<FV>>; // react hook unique name
+  control: Control<FV>;
+  children: React.ReactNode; // MenuItems with value props and <>...text</>
+  label: string; // label of select
+}
+
+export default function SelectReactForm<FV extends FieldValues>({
+  name,
+  control,
+  children,
+  label,
+}: SelectProps<FV>) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, value } }) => (
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+            <InputLabel>{label}</InputLabel>
+            <Select value={value} label={label} onChange={onChange}>
+              {children}
+            </Select>
+          </FormControl>
+        </Box>
+      )}
+    />
+  );
+}

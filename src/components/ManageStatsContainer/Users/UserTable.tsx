@@ -6,7 +6,7 @@ import { userListAtom } from "src/store/UserStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // custom hooks
-import useFirebaseDb from "src/hooks/useFirebaseDb";
+import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
 import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // components
 import AlertDialog from "src/components/UI/AlertDialog";
@@ -48,7 +48,7 @@ export default function UserTable({ data }: UserTableProps) {
     isError,
     readSingleUser,
     updateSingleUser,
-  } = useFirebaseDb();
+  } = useFirebaseUserDb();
   const [userList, setUserList] = useAtom(userListAtom);
 
   // save row edits
