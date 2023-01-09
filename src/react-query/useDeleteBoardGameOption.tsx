@@ -2,6 +2,7 @@
 import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 // react-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import boardGameOptionsKeys from "./keystore/addBoardGameOptionsKeyStore";
 
 export default function useDeleteBoardGameOption() {
   const { deleteBoardGameOption } = useFirebaseBoardGameDb();
@@ -13,6 +14,9 @@ export default function useDeleteBoardGameOption() {
       return newData;
     },
     onSuccess: (data) =>
-      queryClient.setQueriesData(["readAllBoardGameOptions"], data),
+      queryClient.setQueriesData(
+        boardGameOptionsKeys.readAllBoardGameOptions,
+        data
+      ),
   });
 }
