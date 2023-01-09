@@ -1,5 +1,7 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
+// react-query set-up
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // dayjs datepicker
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -13,6 +15,8 @@ import { ToastContainer } from "react-toastify";
 // components
 import MainLayout from "src/components/MainLayout";
 
+const queryClient = new QueryClient();
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
@@ -22,9 +26,11 @@ export default function App({ Component, pageProps }: AppProps) {
           <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
         </Head>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <MainLayout>
-            <Component {...pageProps} />
-          </MainLayout>
+          <QueryClientProvider client={queryClient}>
+            <MainLayout>
+              <Component {...pageProps} />
+            </MainLayout>
+          </QueryClientProvider>
         </LocalizationProvider>
       </ThemeProvider>
       <ToastContainer

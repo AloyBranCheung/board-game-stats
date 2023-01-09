@@ -98,6 +98,9 @@ export default function useFirebaseBoardGameDb() {
         setIsLoading,
         setIsError
       );
+
+      const newReadAllBoardGameOptions = await readAllBoardGameOptions();
+      return newReadAllBoardGameOptions;
     } catch (error) {
       console.error(error);
       handleDbError(
@@ -151,6 +154,8 @@ export default function useFirebaseBoardGameDb() {
         setIsError,
         setIsLoading
       );
+      const newData = await readAllBoardGameOptions();
+      return newData;
     } catch (error) {
       console.error(error);
       handleDbError(

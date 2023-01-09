@@ -1,11 +1,11 @@
 import React from "react";
-// firebase
-import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 // react-forms
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "src/components/UI/form-components/Input";
+// react-query
+import useAddBoardGameOptions from "src/react-query/useAddBoardGameOptions";
 // components
 import AlertDialog from "src/components/UI/AlertDialog";
 import LoadingSpinner from "src/components/UI/LoadingSpinner";
@@ -22,8 +22,8 @@ export default function AddBoardGameOptions({
   setIsAddBoardGameOption,
 }: AddBoardGameOptionsProps) {
   // hooks
-  const { createBoardGameOption, isLoading, isError } =
-    useFirebaseBoardGameDb();
+  const { mutate, isError, isLoading } = useAddBoardGameOptions();
+
   const {
     control,
     handleSubmit,
@@ -41,7 +41,8 @@ export default function AddBoardGameOptions({
     data: z.infer<typeof boardGameOptionSchema>
   ) => {
     try {
-      await createBoardGameOption(data);
+      await mutate(data);
+      setIsAddBoardGameOption(false);
       reset();
     } catch (error) {
       console.error(error);
