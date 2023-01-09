@@ -24,6 +24,8 @@ export default function OverallGameHistoryTable() {
   const [boardGamesOptions, setBoardGamesOptions] = useState<string[]>([]);
   const [isAddHistory, setIsAddHistory] = useState(false); // add history dialog
   const [isAddBoardGameOption, setIsAddBoardGameOption] = useState(false); // add board game dialog
+  const [isDeleteBoardGameOptions, setIsDeleteBoardGameOptions] =
+    useState(false); // delete board game option dialog
   // hooks
   const toastErrorMessage = useToastErrorMessage();
 
@@ -78,6 +80,9 @@ export default function OverallGameHistoryTable() {
             <PrimaryButton onClick={() => setIsAddBoardGameOption(true)}>
               Add Board Game Option
             </PrimaryButton>
+            <PrimaryButton onClick={() => setIsDeleteBoardGameOptions(true)}>
+              Delete Board Game Option
+            </PrimaryButton>
           </Box>
         )}
       />
@@ -94,7 +99,10 @@ export default function OverallGameHistoryTable() {
         setIsAddBoardGameOption={setIsAddBoardGameOption}
       />
 
-      <DeleteBoardGameOption />
+      <DeleteBoardGameOption
+        isDeleteBoardGameOptions={isDeleteBoardGameOptions}
+        setIsDeleteBoardGameOptions={setIsDeleteBoardGameOptions}
+      />
     </>
   );
 }

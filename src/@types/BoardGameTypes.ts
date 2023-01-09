@@ -9,3 +9,10 @@ export interface BoardGameHistory {
 export interface OverallGameHistory {
   [date: string]: BoardGameHistory;
 }
+
+export interface BoardGameOption {
+  [key: string]: {
+    _id: string;
+    boardGameName: string;
+  };
+}

@@ -114,13 +114,34 @@ export default function useFirebaseBoardGameDb() {
 
   // read all board games win/loss obj
 
+  // read all board game options
+  const readAllBoardGameOptions = async () => {
+    setIsLoading(true);
+    try {
+      const fetchData = await get(
+        child(ref(database), `${userProfile?.uid}/boardGameOptions`)
+      );
+      const boardGameOptions = await fetchData.val();
+
+      return boardGameOptions;
+    } catch (error) {
+      console.error(error);
+      handleDbError(
+        error,
+        "Error getting all board game options.",
+        toastErrorMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    }
+  };
+
   // update single board game history win/loss obj
 
   // delete single board game option
   const deleteBoardGameOption = async (_id: string) => {
     setIsLoading(true);
     try {
-      console.log("firebase", _id);
       await remove(
         child(ref(database), `${userProfile?.uid}/boardGameOptions/${_id}`)
       );
@@ -150,5 +171,6 @@ export default function useFirebaseBoardGameDb() {
     createBoardGameHistory,
     createBoardGameOption,
     deleteBoardGameOption,
+    readAllBoardGameOptions,
   };
 }
