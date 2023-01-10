@@ -20,6 +20,7 @@ import { handleDbError, handleDbSuccess } from "./utils";
 import { z } from "zod";
 import {
   createNewBoardGameHistorySchema,
+  createNewBoardGameHistoryDbSchema,
   boardGameOptionSchema,
   boardGameOptionDbSchema,
 } from "src/validators/BoardGameHistoryValidation";
@@ -33,26 +34,46 @@ export default function useFirebaseBoardGameDb() {
 
   // basic config for CRUD actions
   const database = getDatabase();
-  const directoryUrl = userProfile ? `${userProfile.uid}/boardGameHistory` : "";
 
   // create single board game win/loss obj
   const createBoardGameHistory = async (
     data: z.infer<typeof createNewBoardGameHistorySchema>
   ) => {
     setIsLoading(true);
-    const dataToSubmit = {
-      ...data,
-      datePicked: data.datePicked.format("YYYY-MM-DD"),
-    };
     try {
-      console.log("firebase", dataToSubmit);
+      const directoryUrl = await `${userProfile?.uid}/boardGameHistory`;
+      const _id = await push(child(ref(database), directoryUrl)).key;
+      const dataToSubmit = {
+        [_id!]: {
+          _id,
+          ...data,
+          datePicked: data.datePicked.format("YYYY-MM-DD"),
+        },
+      };
+      // data validation
+      z.record(
+        z.string().min(1, { message: "At least 1 character needed for _id." }),
+        createNewBoardGameHistoryDbSchema
+      ).parse(dataToSubmit);
+
+      update(ref(database, directoryUrl), dataToSubmit);
+
       handleDbSuccess(
         "Successfully created game history.",
         toastSuccessMessageFn,
         setIsLoading,
         setIsError
       );
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+      handleDbError(
+        error,
+        "Error adding game history.",
+        toastErrorMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    }
   };
 
   // create add board game option str
@@ -116,6 +137,26 @@ export default function useFirebaseBoardGameDb() {
   // read single board game win/loss obj
 
   // read all board games win/loss obj
+  const readAllBoardGameHistory = async () => {
+    setIsLoading(true);
+    try {
+      const fetchData = await get(
+        child(ref(database), `${userProfile?.uid}/boardGameHistory`)
+      );
+      const boardGameHistory = fetchData.val();
+
+      return boardGameHistory;
+    } catch (error) {
+      console.error(error);
+      handleDbError(
+        error,
+        "Error getting board game history.",
+        toastErrorMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    }
+  };
 
   // read all board game options
   const readAllBoardGameOptions = async () => {
@@ -177,5 +218,6 @@ export default function useFirebaseBoardGameDb() {
     createBoardGameOption,
     deleteBoardGameOption,
     readAllBoardGameOptions,
+    readAllBoardGameHistory,
   };
 }

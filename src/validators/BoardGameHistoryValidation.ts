@@ -11,6 +11,17 @@ export const createNewBoardGameHistorySchema = z.object({
   comments: z.string().nullable(),
 });
 
+export const createNewBoardGameHistoryDbSchema = z.object({
+  _id: z.string().min(1, { message: "At least 1 character required for _id." }),
+  datePicked: z.string(),
+  boardGame: z
+    .string()
+    .min(1, { message: "Must be at least 1 character long." }),
+  winner: z.string().min(1, { message: "Must be at least 1 character long." }),
+  loser: z.string().min(1, { message: "Must be at least 1 character long." }),
+  comments: z.string().nullable(),
+});
+
 export const boardGameOptionSchema = z.object({
   boardGameName: z
     .string()

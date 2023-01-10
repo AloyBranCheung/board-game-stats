@@ -1,6 +1,7 @@
 import React from "react";
-// firebase hook
-import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
+
+// react-query
+import useAddBoardGameHistory from "src/react-query/useAddBoardGameHistory";
 // mui components
 import { MenuItem } from "@mui/material";
 // react-forms
@@ -32,8 +33,8 @@ export default function AddGameHistory({
   users,
 }: AddGameHistoryProps) {
   // hooks
-  const { isLoading, isError, createBoardGameHistory } =
-    useFirebaseBoardGameDb();
+
+  const { mutate, isLoading, isError } = useAddBoardGameHistory();
 
   const {
     control,
@@ -56,11 +57,11 @@ export default function AddGameHistory({
     data: z.infer<typeof createNewBoardGameHistorySchema>
   ) => {
     try {
-      await createBoardGameHistory(dataToSubmit);
-      //   setIsAddHistory(false);
-      //   reset();
+      await mutate(data);
+      setIsAddHistory(false);
+      reset();
     } catch (error) {
-      console.log(dataToSubmit);
+      console.log(error);
     }
   };
 
@@ -107,7 +108,7 @@ export default function AddGameHistory({
                 : undefined
             }
           >
-            {boardGamesOptions.map((boardGame) => (
+            {boardGamesOptions?.map((boardGame) => (
               <MenuItem key={boardGame} value={boardGame}>
                 {boardGame}
               </MenuItem>
