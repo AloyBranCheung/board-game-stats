@@ -1,7 +1,7 @@
 import { MRT_ColumnDef } from "material-react-table";
-import { BoardGameHistory } from "src/@types/BoardGameTypes";
+import { BoardGameHistoryDb } from "src/@types/BoardGameTypes";
 
-export const overallGameHistoryTableColumns: MRT_ColumnDef<BoardGameHistory>[] =
+export const overallGameHistoryTableColumns: MRT_ColumnDef<BoardGameHistoryDb>[] =
   [
     {
       header: "Date",

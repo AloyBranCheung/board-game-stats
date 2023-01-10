@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-// firebase hook
-import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
 // react-query
+import useReadAllUsers from "src/react-query/useReadAllUsers";
+import useDeleteBoardGameHistory from "src/react-query/useDeleteBoardGameHistory";
 import useReadAllBoardGameHistory from "src/react-query/useReadAllBoardGameHistory";
 import useReadAllBoardGameOptions from "src/react-query/useReadAllBoardGameOptions";
 // toast-error-message
 import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // material react table
-import MaterialReactTable from "material-react-table";
+import MaterialReactTable, { MRT_Row } from "material-react-table";
 // table config
 import { overallGameHistoryTableColumns } from "./config";
 // mui
@@ -18,9 +18,9 @@ import PrimaryButton from "src/components/UI/PrimaryButton";
 import AddBoardGameOptions from "./AddBoardGameOptions";
 import AddGameHistory from "./AddGameHistory";
 import DeleteBoardGameOption from "./DeleteBoardGameOption";
-// types/validators
-import { BoardGameHistory } from "src/@types/BoardGameTypes";
 import LoadingSpinner from "src/components/UI/LoadingSpinner";
+// types/validators
+import { BoardGameHistoryDb } from "src/@types/BoardGameTypes";
 
 export default function OverallGameHistoryTable() {
   // state
@@ -30,15 +30,13 @@ export default function OverallGameHistoryTable() {
   const [isDeleteBoardGameOptions, setIsDeleteBoardGameOptions] =
     useState(false); // delete board game option dialog
   const [boardGameOptions, setBoardGameOptions] = useState<string[]>([]);
-  const [boardGameHistory, setBoardGameHistory] = useState<BoardGameHistory[]>(
-    []
-  );
   // hooks
-  const { data: responseBoardGameOptions } = useReadAllBoardGameOptions();
   const toastErrorMessage = useToastErrorMessage();
-  const { readAllUsers } = useFirebaseUserDb();
+  const { data: responseBoardGameOptions } = useReadAllBoardGameOptions();
   const { data: responseBoardGameHistory, isLoading } =
     useReadAllBoardGameHistory();
+  const { mutate: deleteGameHistory } = useDeleteBoardGameHistory();
+  const { data: responseReadAllUsers } = useReadAllUsers();
 
   // useEffect
   useEffect(() => {
@@ -46,40 +44,38 @@ export default function OverallGameHistoryTable() {
       try {
         // board game options
         if (responseBoardGameOptions) {
-          const bgOptions = await Object.keys(responseBoardGameOptions).map(
-            (ele) => {
-              const boardGame = responseBoardGameOptions[ele].boardGameName;
-              return boardGame;
-            }
-          );
+          const fetchData = (await Object.values(responseBoardGameOptions)) as {
+            _id: string;
+            boardGameName: string;
+          }[];
+          const bgOptions = fetchData.map((obj) => obj.boardGameName);
           setBoardGameOptions(bgOptions);
         }
-        // board game history
-        if (responseBoardGameHistory) {
-          const bgHistory = await Object.keys(responseBoardGameHistory).map(
-            (ele) => responseBoardGameHistory[ele]
-          );
-          setBoardGameHistory(bgHistory);
-        }
         // user response
-        const userResponse = await readAllUsers();
-        const users = userResponse?.map((user) => user.name);
-        setUsers(users as string[]);
+        if (responseReadAllUsers) {
+          const users = responseReadAllUsers?.map((user) => user.name);
+          setUsers(users as string[]);
+        }
       } catch (error) {
         console.error(error);
         toastErrorMessage("Error fetching users/board game options.");
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setUsers, responseBoardGameOptions, responseBoardGameHistory]);
+  }, [
+    setUsers,
+    responseBoardGameOptions,
+    responseBoardGameHistory,
+    responseReadAllUsers,
+  ]);
 
   // fns
   const handleRowEditSave = () => {
     console.log("row save");
   };
 
-  const handleDeleteRow = () => {
-    console.log("row delete");
+  const handleDeleteRow = async (row: MRT_Row<BoardGameHistoryDb>) => {
+    await deleteGameHistory(row.original._id.toString());
   };
 
   return (
@@ -89,7 +85,13 @@ export default function OverallGameHistoryTable() {
       ) : (
         <>
           <MaterialReactTable
-            data={boardGameHistory}
+            data={
+              responseBoardGameHistory
+                ? (Object.values(
+                    responseBoardGameHistory
+                  ) as BoardGameHistoryDb[])
+                : []
+            }
             columns={overallGameHistoryTableColumns}
             enableEditing
             onEditingRowSave={handleRowEditSave}

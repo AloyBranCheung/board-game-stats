@@ -1,6 +1,6 @@
 // react-query
 import { useQuery } from "@tanstack/react-query";
-import boardGameOptionsKeys from "./keystore/addBoardGameOptionsKeyStore";
+import boardGameOptionsKeys from "./keystore/boardGameOptionsKeyStore";
 // firebase
 import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 

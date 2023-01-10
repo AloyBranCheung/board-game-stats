@@ -210,14 +210,41 @@ export default function useFirebaseBoardGameDb() {
   };
 
   // delete single board game history win/loss obj
+  const deleteBoardGameHistory = async (_id: string) => {
+    setIsLoading(true);
+    try {
+      await remove(
+        child(ref(database), `${userProfile?.uid}/boardGameHistory/${_id}`)
+      );
+      handleDbSuccess(
+        "Successfully removed board game history.",
+        toastSuccessMessageFn,
+        setIsError,
+        setIsLoading
+      );
+      const newHistory = await readAllBoardGameHistory();
+      console.log("firebase", newHistory);
+      return newHistory ? newHistory : null;
+    } catch (error) {
+      console.error(error);
+      handleDbError(
+        error,
+        "Error deleting game history.",
+        toastErrorMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    }
+  };
 
   return {
     isLoading,
     isError,
     createBoardGameHistory,
     createBoardGameOption,
-    deleteBoardGameOption,
     readAllBoardGameOptions,
     readAllBoardGameHistory,
+    deleteBoardGameOption,
+    deleteBoardGameHistory,
   };
 }

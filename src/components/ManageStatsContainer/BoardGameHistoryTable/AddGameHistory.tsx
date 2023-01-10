@@ -66,7 +66,7 @@ export default function AddGameHistory({
   };
 
   // menu items
-  const userSelectionMenuItems = users.map((user) => (
+  const userSelectionMenuItems = users?.map((user) => (
     <MenuItem key={user} value={user}>
       {user}
     </MenuItem>

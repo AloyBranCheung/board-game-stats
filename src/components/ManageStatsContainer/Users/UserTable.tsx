@@ -1,7 +1,8 @@
 import { useState } from "react";
-// jotai
-import { useAtom } from "jotai";
-import { userListAtom } from "src/store/UserStore";
+// react-query
+import useUpdateSingleUser from "src/react-query/useUpdateSingleUser";
+import useAddNewUser from "src/react-query/useAddNewUser";
+import useDeleteUser from "src/react-query/useDeleteUser";
 // react-hook-form
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,24 +43,21 @@ export default function UserTable({ data }: UserTableProps) {
   });
   const toastErrorMessage = useToastErrorMessage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const {
-    createNewUser,
-    deleteSingleUser,
-    isError,
-    readSingleUser,
-    updateSingleUser,
-  } = useFirebaseUserDb();
-  const [userList, setUserList] = useAtom(userListAtom);
+  const { isError } = useFirebaseUserDb();
+  const { mutate: createNewUser } = useAddNewUser();
+  const { mutate: deleteUser } = useDeleteUser();
+  const { mutate: updateSingleUser } = useUpdateSingleUser();
 
   // save row edits
   const handleRowEditSave: MaterialReactTableProps<User>["onEditingRowSave"] =
     async ({ exitEditingMode, row, values }) => {
-      const _id = await row.original._id.toString();
+      const _id = row.original._id.toString();
       // update backend
-      await updateSingleUser(_id, { ...row.original, ...values } as UserObj);
-      // update local state
-      userList[row.index] = { ...row.original, ...values };
-      setUserList([...userList]);
+      await updateSingleUser({
+        _id,
+        value: { ...row.original, ...values } as UserObj,
+      });
+
       //required to exit editing mode and close modal
       exitEditingMode();
     };
@@ -69,13 +67,10 @@ export default function UserTable({ data }: UserTableProps) {
     data: z.infer<typeof createNewUserSchema>
   ) => {
     try {
-      const newUserId = await createNewUser(data.name);
-      if (newUserId) {
-        const newUser: User = await readSingleUser(newUserId);
-        setUserList((prev) => [...prev, newUser]);
-        setIsDialogOpen(false);
-        reset();
-      }
+      // mutate
+      await createNewUser(data);
+      setIsDialogOpen(false);
+      reset();
     } catch (error) {
       console.error(error);
       toastErrorMessage("Something went wrong creating the user.");
@@ -84,9 +79,7 @@ export default function UserTable({ data }: UserTableProps) {
 
   // delete row
   const handleDeleteRow = async (row: MRT_Row<User>) => {
-    await deleteSingleUser(row.original._id.toString());
-    userList.splice(row.index, 1);
-    setUserList([...userList]);
+    await deleteUser(row.original._id.toString());
   };
 
   return (

@@ -88,6 +88,7 @@ export default function useFirebaseUserDb() {
         handleDbSuccess();
         return listOfUsers;
       }
+      handleDbSuccess();
     } catch (error) {
       console.error(error);
       handleDbError(error, "Something went wrong retrieving users");
@@ -132,7 +133,9 @@ export default function useFirebaseUserDb() {
       await remove(
         child(ref(database), `${userProfile?.uid}/users/${userIdentifier}`)
       );
+      const newUserList = await readAllUsers();
       handleDbSuccess();
+      return newUserList ? newUserList : null;
     } catch (error) {
       console.error(error);
       handleDbError(error, "Something went wrong deleting user.");
