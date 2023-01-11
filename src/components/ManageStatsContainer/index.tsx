@@ -10,7 +10,7 @@ export default function ManageStatsContainer() {
     <Container
       sx={{
         paddingTop: "1.25rem",
-        paddingBottom: "1.25rem",
+        paddingBottom: "5rem",
         display: "flex",
         flexDirection: "column",
         gap: "1.25rem",
