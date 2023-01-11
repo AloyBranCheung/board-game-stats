@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 // react-query
+import useUpdateBoardGameHistory from "src/react-query/useUpdateBoardGameHistory";
 import useReadAllUsers from "src/react-query/useReadAllUsers";
 import useDeleteBoardGameHistory from "src/react-query/useDeleteBoardGameHistory";
 import useReadAllBoardGameHistory from "src/react-query/useReadAllBoardGameHistory";
@@ -7,7 +8,10 @@ import useReadAllBoardGameOptions from "src/react-query/useReadAllBoardGameOptio
 // toast-error-message
 import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // material react table
-import MaterialReactTable, { MRT_Row } from "material-react-table";
+import MaterialReactTable, {
+  MRT_Row,
+  MaterialReactTableProps,
+} from "material-react-table";
 // table config
 import { overallGameHistoryTableColumns } from "./config";
 // mui
@@ -35,8 +39,9 @@ export default function OverallGameHistoryTable() {
   const { data: responseBoardGameOptions } = useReadAllBoardGameOptions();
   const { data: responseBoardGameHistory, isLoading } =
     useReadAllBoardGameHistory();
-  const { mutate: deleteGameHistory } = useDeleteBoardGameHistory();
   const { data: responseReadAllUsers } = useReadAllUsers();
+  const { mutate: deleteGameHistory } = useDeleteBoardGameHistory();
+  const { mutate: updateGameHistory } = useUpdateBoardGameHistory();
 
   // useEffect
   useEffect(() => {
@@ -70,9 +75,12 @@ export default function OverallGameHistoryTable() {
   ]);
 
   // fns
-  const handleRowEditSave = () => {
-    console.log("row save");
-  };
+  const handleRowEditSave: MaterialReactTableProps<BoardGameHistoryDb>["onEditingRowSave"] =
+    async ({ exitEditingMode, row, values }) => {
+      const _id = row.original._id.toString();
+      await updateGameHistory({ _id, value: values });
+      exitEditingMode();
+    };
 
   const handleDeleteRow = async (row: MRT_Row<BoardGameHistoryDb>) => {
     await deleteGameHistory(row.original._id.toString());

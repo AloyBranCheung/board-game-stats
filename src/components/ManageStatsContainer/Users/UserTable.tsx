@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // custom hooks
 import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
-import useToastErrorMessage from "src/hooks/useToastErrorMessage";
 // components
 import AlertDialog from "src/components/UI/AlertDialog";
 import PrimaryButton from "src/components/UI/PrimaryButton";
@@ -41,7 +40,6 @@ export default function UserTable({ data }: UserTableProps) {
       name: "",
     },
   });
-  const toastErrorMessage = useToastErrorMessage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { isError } = useFirebaseUserDb();
   const { mutate: createNewUser } = useAddNewUser();
@@ -66,15 +64,10 @@ export default function UserTable({ data }: UserTableProps) {
   const handleCreateNewUser = async (
     data: z.infer<typeof createNewUserSchema>
   ) => {
-    try {
-      // mutate
-      await createNewUser(data);
-      setIsDialogOpen(false);
-      reset();
-    } catch (error) {
-      console.error(error);
-      toastErrorMessage("Something went wrong creating the user.");
-    }
+    // mutate
+    await createNewUser(data);
+    setIsDialogOpen(false);
+    reset();
   };
 
   // delete row

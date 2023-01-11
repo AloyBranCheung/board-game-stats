@@ -24,6 +24,7 @@ import {
   boardGameOptionSchema,
   boardGameOptionDbSchema,
 } from "src/validators/BoardGameHistoryValidation";
+import { BoardGameHistory } from "src/@types/BoardGameTypes";
 
 export default function useFirebaseBoardGameDb() {
   const toastErrorMessageFn = useToastErrorMessage();
@@ -134,8 +135,6 @@ export default function useFirebaseBoardGameDb() {
     }
   };
 
-  // read single board game win/loss obj
-
   // read all board games win/loss obj
   const readAllBoardGameHistory = async () => {
     setIsLoading(true);
@@ -181,6 +180,37 @@ export default function useFirebaseBoardGameDb() {
   };
 
   // update single board game history win/loss obj
+  const updateSingleBoardGameHistory = async (
+    _id: string,
+    value: BoardGameHistory
+  ) => {
+    const dataToSubmit = { _id, ...value };
+    console.log("firebase", dataToSubmit);
+    try {
+      // validate
+      createNewBoardGameHistoryDbSchema.parse(dataToSubmit);
+      // update db
+      await update(
+        ref(database, `${userProfile?.uid}/boardGameHistory/${_id}`),
+        dataToSubmit
+      );
+      handleDbSuccess(
+        "Successfully updated board game history.",
+        toastSuccessMessageFn,
+        setIsLoading,
+        setIsError
+      );
+    } catch (error) {
+      console.error(error);
+      handleDbError(
+        error,
+        "Error updating board game history.",
+        toastErrorMessageFn,
+        setIsError,
+        setIsLoading
+      );
+    }
+  };
 
   // delete single board game option
   const deleteBoardGameOption = async (_id: string) => {
@@ -246,5 +276,6 @@ export default function useFirebaseBoardGameDb() {
     readAllBoardGameHistory,
     deleteBoardGameOption,
     deleteBoardGameHistory,
+    updateSingleBoardGameHistory,
   };
 }
