@@ -1,24 +1,24 @@
 import { useState } from "react";
-// jotai
-import { useAtom } from "jotai";
-import { userListAtom } from "src/store/UserStore";
+// react-query
+import useUpdateSingleUser from "src/react-query/useUpdateSingleUser";
+import useAddNewUser from "src/react-query/useAddNewUser";
+import useDeleteUser from "src/react-query/useDeleteUser";
 // react-hook-form
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // custom hooks
-import useFirebaseDb from "src/hooks/useFirebaseDb";
-import useToastErrorMessage from "src/hooks/useToastErrorMessage";
+import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
 // components
-import AlertDialog from "../UI/AlertDialog";
-import TableCRUDActions from "../UI/Table/TableCRUDActions";
-import PrimaryButton from "../UI/PrimaryButton";
-import Input from "../UI/form-components/Input";
+import AlertDialog from "src/components/UI/AlertDialog";
+import PrimaryButton from "src/components/UI/PrimaryButton";
+import Input from "src/components/UI/form-components/Input";
+import TableCRUDActions from "src/components/UI/Tables/TableCRUDActions";
 // Material React Table
 import MaterialReactTable, {
   MRT_Row,
   MaterialReactTableProps,
 } from "material-react-table";
-import { userTableColumns } from "src/components/ManageStatsContainer/config";
+import { userTableColumns } from "src/components/ManageStatsContainer/Users/config";
 // types
 import { z } from "zod";
 import { User, UserList, UserObj } from "src/@types/UserTypes";
@@ -40,26 +40,22 @@ export default function UserTable({ data }: UserTableProps) {
       name: "",
     },
   });
-  const toastErrorMessage = useToastErrorMessage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const {
-    createNewUser,
-    deleteSingleUser,
-    isError,
-    readSingleUser,
-    updateSingleUser,
-  } = useFirebaseDb();
-  const [userList, setUserList] = useAtom(userListAtom);
+  const { isError } = useFirebaseUserDb();
+  const { mutate: createNewUser } = useAddNewUser();
+  const { mutate: deleteUser } = useDeleteUser();
+  const { mutate: updateSingleUser } = useUpdateSingleUser();
 
   // save row edits
   const handleRowEditSave: MaterialReactTableProps<User>["onEditingRowSave"] =
     async ({ exitEditingMode, row, values }) => {
-      const _id = await row.original._id.toString();
+      const _id = row.original._id.toString();
       // update backend
-      updateSingleUser(_id, { ...row.original, ...values } as UserObj);
-      // update local state
-      userList[row.index] = { ...row.original, ...values };
-      setUserList([...userList]);
+      await updateSingleUser({
+        _id,
+        value: { ...row.original, ...values } as UserObj,
+      });
+
       //required to exit editing mode and close modal
       exitEditingMode();
     };
@@ -68,25 +64,15 @@ export default function UserTable({ data }: UserTableProps) {
   const handleCreateNewUser = async (
     data: z.infer<typeof createNewUserSchema>
   ) => {
-    try {
-      const newUserId = await createNewUser(data.name);
-      if (newUserId) {
-        const newUser: User = await readSingleUser(newUserId);
-        setUserList((prev) => [...prev, newUser]);
-        setIsDialogOpen(false);
-        reset();
-      }
-    } catch (error) {
-      console.error(error);
-      toastErrorMessage("Something went wrong creating the user.");
-    }
+    // mutate
+    await createNewUser(data);
+    setIsDialogOpen(false);
+    reset();
   };
 
   // delete row
-  const handleDeleteRow = (row: MRT_Row<User>) => {
-    deleteSingleUser(row.original._id.toString());
-    userList.splice(row.index, 1);
-    setUserList([...userList]);
+  const handleDeleteRow = async (row: MRT_Row<User>) => {
+    await deleteUser(row.original._id.toString());
   };
 
   return (

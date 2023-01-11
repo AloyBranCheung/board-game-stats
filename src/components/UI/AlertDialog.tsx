@@ -7,6 +7,7 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  Box,
 } from "@mui/material";
 
 interface AlertDialogProps {
@@ -44,7 +45,13 @@ export default function AlertDialog({
           {dialogContentText && (
             <DialogContentText>{dialogContentText}</DialogContentText>
           )}
-          {children && children}
+          {children && (
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+            >
+              {children}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={onCancelButtonClick}>{cancelButtonText}</Button>

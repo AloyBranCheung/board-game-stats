@@ -14,7 +14,7 @@ interface TableCRUDActionsProps {
   handleDeleteRow: (row: MRT_Row<User>) => void;
 }
 
-export default function TableCRUDActions({
+export default function UserTableCRUDActions({
   row,
   table,
   handleDeleteRow,

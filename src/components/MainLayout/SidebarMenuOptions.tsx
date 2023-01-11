@@ -26,18 +26,6 @@ export default function SidebarMenuOptions() {
       </Typography>
       <Typography
         sx={{ cursor: "pointer" }}
-        onClick={() => handleMenuClick("/byboardgames")}
-      >
-        By Board Games
-      </Typography>
-      <Typography
-        sx={{ cursor: "pointer" }}
-        onClick={() => handleMenuClick("/addstat")}
-      >
-        Add Stat
-      </Typography>
-      <Typography
-        sx={{ cursor: "pointer" }}
         onClick={() => handleMenuClick("/managestats")}
       >
         Manage Stats

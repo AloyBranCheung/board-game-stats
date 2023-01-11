@@ -23,7 +23,7 @@ import { fromZodError } from "zod-validation-error";
 
 // https://board-game-stats-3420c-default-rtdb.firebaseio.com/
 
-export default function useFirebaseDb() {
+export default function useFirebaseUserDb() {
   const { userProfile } = useFirebaseAuth();
   const database = getDatabase();
   const toastErrorMessage = useToastErrorMessage();
@@ -31,21 +31,23 @@ export default function useFirebaseDb() {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const handleError = (error: any, message: string) => {
+  const handleDbError = (error: any, message: string) => {
     // if Zod error
     const validationError = fromZodError(error);
     if (validationError) {
       console.error(error);
       toastErrorMessage("Zod validation error.");
       setIsError(true);
+      setIsLoading(false);
     } else {
       console.error(error);
       toastErrorMessage(message);
       setIsError(true);
+      setIsLoading(false);
     }
   };
 
-  const handleSuccess = () => {
+  const handleDbSuccess = () => {
     setIsLoading(false);
     setIsError(false);
   };
@@ -65,10 +67,10 @@ export default function useFirebaseDb() {
 
       await update(ref(database, userProfile?.uid + "/users"), userObj);
       toastSuccessMessage("Succesfully created new user.");
-      handleSuccess();
+      handleDbSuccess();
       return _id;
     } catch (error: any) {
-      handleError(error, "Something went wrong, check the logs.");
+      handleDbError(error, "Something went wrong, check the logs.");
     }
   };
 
@@ -83,12 +85,13 @@ export default function useFirebaseDb() {
       let listOfUsers: UserList = [];
       if (responseData) {
         listOfUsers = Object.values(responseData);
-        handleSuccess();
+        handleDbSuccess();
         return listOfUsers;
       }
+      handleDbSuccess();
     } catch (error) {
       console.error(error);
-      handleError(error, "Something went wrong retrieving users");
+      handleDbError(error, "Something went wrong retrieving users");
     }
   };
 
@@ -103,10 +106,10 @@ export default function useFirebaseDb() {
       if (responseData) {
         return responseData;
       }
-      handleSuccess();
+      handleDbSuccess();
     } catch (error) {
       console.error(error);
-      handleError(error, "Something went wrong retrieving that user.");
+      handleDbError(error, "Something went wrong retrieving that user.");
     }
   };
 
@@ -117,9 +120,9 @@ export default function useFirebaseDb() {
       // validate
       createNewUserSchema.parse(value);
       await update(ref(database, `${userProfile?.uid}/users/${_id}`), value);
-      handleSuccess();
+      handleDbSuccess();
     } catch (error) {
-      handleError(error, "Something went wrong updating single user.");
+      handleDbError(error, "Something went wrong updating single user.");
     }
   };
 
@@ -130,10 +133,12 @@ export default function useFirebaseDb() {
       await remove(
         child(ref(database), `${userProfile?.uid}/users/${userIdentifier}`)
       );
-      handleSuccess();
+      const newUserList = await readAllUsers();
+      handleDbSuccess();
+      return newUserList ? newUserList : null;
     } catch (error) {
       console.error(error);
-      handleError(error, "Something went wrong deleting user.");
+      handleDbError(error, "Something went wrong deleting user.");
     }
   };
 
