@@ -5,7 +5,7 @@ import { isSidebarOpenAtom } from "src/store/MainLayoutStore";
 // next-router
 import { useRouter } from "next/router";
 // mui
-import { Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
 // config
 import menuOptions, { MenuOptions } from "./sidebarMenuConfig";
 
@@ -19,13 +19,14 @@ export default function SidebarMenuOptions() {
   };
 
   const menuItems = menuOptions.map(({ name, route }: MenuOptions) => (
-    <Typography
-      key={route}
-      sx={{ cursor: "pointer", width: "100%" }}
-      onClick={() => handleMenuClick(route)}
-    >
-      {name}
-    </Typography>
+    <Button key={route}>
+      <Typography
+        sx={{ cursor: "pointer", width: "100%" }}
+        onClick={() => handleMenuClick(route)}
+      >
+        {name}
+      </Typography>
+    </Button>
   ));
 
   return (
