@@ -66,6 +66,7 @@ export default function useFirebaseBoardGameDb() {
         setIsError
       );
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(
         error,
@@ -124,6 +125,7 @@ export default function useFirebaseBoardGameDb() {
       const newReadAllBoardGameOptions = await readAllBoardGameOptions();
       return newReadAllBoardGameOptions;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(
         error,
@@ -146,6 +148,7 @@ export default function useFirebaseBoardGameDb() {
 
       return boardGameHistory;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(
         error,
@@ -168,6 +171,7 @@ export default function useFirebaseBoardGameDb() {
 
       return boardGameOptions;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(
         error,
@@ -185,6 +189,7 @@ export default function useFirebaseBoardGameDb() {
     value: BoardGameHistory
   ) => {
     const dataToSubmit = { _id, ...value };
+    // eslint-disable-next-line no-console
     console.log("firebase", dataToSubmit);
     try {
       // validate
@@ -201,6 +206,7 @@ export default function useFirebaseBoardGameDb() {
         setIsError
       );
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(
         error,
@@ -228,6 +234,7 @@ export default function useFirebaseBoardGameDb() {
       const newData = await readAllBoardGameOptions();
       return newData;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(
         error,
@@ -253,9 +260,9 @@ export default function useFirebaseBoardGameDb() {
         setIsLoading
       );
       const newHistory = await readAllBoardGameHistory();
-      console.log("firebase", newHistory);
       return newHistory ? newHistory : null;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(
         error,

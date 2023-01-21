@@ -62,6 +62,7 @@ export default function OverallGameHistoryTable() {
           setUsers(users as string[]);
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
         toastErrorMessage("Error fetching users/board game options.");
       }

@@ -35,11 +35,13 @@ export default function useFirebaseUserDb() {
     // if Zod error
     const validationError = fromZodError(error);
     if (validationError) {
+      // eslint-disable-next-line no-console
       console.error(error);
       toastErrorMessage("Zod validation error.");
       setIsError(true);
       setIsLoading(false);
     } else {
+      // eslint-disable-next-line no-console
       console.error(error);
       toastErrorMessage(message);
       setIsError(true);
@@ -90,6 +92,7 @@ export default function useFirebaseUserDb() {
       }
       handleDbSuccess();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(error, "Something went wrong retrieving users");
     }
@@ -108,6 +111,7 @@ export default function useFirebaseUserDb() {
       }
       handleDbSuccess();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(error, "Something went wrong retrieving that user.");
     }
@@ -137,6 +141,7 @@ export default function useFirebaseUserDb() {
       handleDbSuccess();
       return newUserList ? newUserList : null;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       handleDbError(error, "Something went wrong deleting user.");
     }
