@@ -30,6 +30,8 @@ export default function Overall({ isLoading, data }: OverallProps) {
     };
     const userLosses: { [user: string]: number } = {};
 
+    // by board game
+
     // logic
     data.forEach((boardGameHistoryObj: BoardGameHistoryDb) => {
       // wins obj
