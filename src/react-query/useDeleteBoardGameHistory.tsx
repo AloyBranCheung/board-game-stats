@@ -2,7 +2,7 @@
 import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 // react-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import keystore from "./keystore";
+import queryKeys from "./keystore";
 
 export default function useDeleteBoardGameHistory() {
   const { deleteBoardGameHistory } = useFirebaseBoardGameDb();
@@ -12,7 +12,7 @@ export default function useDeleteBoardGameHistory() {
     mutationFn: (_id: string) => deleteBoardGameHistory(_id),
     onSuccess: (data) => {
       queryClient.setQueryData(
-        keystore.boardGameHistoryKeys.readAllBoardGameHistory,
+        queryKeys.boardGameHistory.readAllBoardGameHistory.queryKey,
         data
       );
     },

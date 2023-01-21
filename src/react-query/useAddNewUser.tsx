@@ -2,7 +2,7 @@
 import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
 // react-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import keystore from "./keystore";
+import queryKeys from "./keystore";
 // types/validators
 import { z } from "zod";
 import { createNewUserSchema } from "src/validators/UserValidation";
@@ -16,7 +16,7 @@ export default function useAddNewUser() {
       createNewUser(data.name),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [...keystore.usersKey.readAllUsers],
+        queryKey: queryKeys.users.readAllUsers.queryKey,
       });
     },
   });

@@ -658,10 +658,10 @@
   resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.1.tgz#ef72bc8022ccf77cdd2715097f062ee591ec145c"
   integrity sha512-hW0GwZj06z/ZFUW2Espl7toVDjghJN+EKqyXzPSV8NV89d5BYp5rRMBJoc+aUN0x5OXDMeRQHazejr2Xmqj2tw==
 
-"@lukemorales/query-key-factory@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@lukemorales/query-key-factory/-/query-key-factory-1.0.3.tgz#d85352f2362a7ac90eba75db8a2edf58668ab0d4"
-  integrity sha512-50E4OCFbOUkHNCiHS5g2RzoDH2ZI0zg+k1/z0x9c9QqfotWNHSVSQ0F1Xb6cO+Ys/W+uMrECIFEcvzFJ/oVmFg==
+"@lukemorales/query-key-factory@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@lukemorales/query-key-factory/-/query-key-factory-1.1.0.tgz#093c89f23d6711214036a960d88f59d997d85677"
+  integrity sha512-9CjPb7HSsnPfa/urgb0aSzMBjwzKq3maVC9JY0Y8PDYwDRNUqnwudtyDMCAFcKZgssu9xT8QKrpByOq2IlWDWQ==
 
 "@mui/base@5.0.0-alpha.112":
   version "5.0.0-alpha.112"

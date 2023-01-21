@@ -2,7 +2,7 @@
 import useFirebaseUserDb from "src/hooks/useFirebaseUserDb";
 // react-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import keystore from "./keystore";
+import queryKeys from "./keystore";
 // types
 import { UserObj } from "src/@types/UserTypes";
 
@@ -20,7 +20,7 @@ export default function useUpdateSingleUser() {
     },
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: [...keystore.usersKey.readAllUsers],
+        queryKey: [...queryKeys.users.readAllUsers.queryKey],
       }),
   });
 }

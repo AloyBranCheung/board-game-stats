@@ -2,7 +2,7 @@
 import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 // react-query mutate
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import keystore from "./keystore";
+import queryKeys from "./keystore";
 // types
 import { BoardGameHistory } from "src/@types/BoardGameTypes";
 
@@ -15,7 +15,9 @@ export default function useUpdateBoardGameHistory() {
       updateSingleBoardGameHistory(_id, value),
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: [...keystore.boardGameHistoryKeys.readAllBoardGameHistory],
+        queryKey: [
+          ...queryKeys.boardGameHistory.readAllBoardGameHistory.queryKey,
+        ],
       }),
   });
 }
