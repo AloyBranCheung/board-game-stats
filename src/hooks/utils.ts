@@ -16,11 +16,13 @@ export const handleDbError = (
   // if Zod error
   const validationError = fromZodError(error);
   if (validationError) {
+    // eslint-disable-next-line no-console
     console.error(error);
     toastErrorMessage("Zod validation error.");
     setIsError(true);
     setIsLoading(false);
   } else {
+    // eslint-disable-next-line no-console
     console.error(error);
     toastErrorMessage(message);
     setIsError(true);

@@ -61,6 +61,7 @@ export default function AddGameHistory({
       setIsAddHistory(false);
       reset();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };

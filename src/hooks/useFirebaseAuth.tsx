@@ -39,6 +39,7 @@ export default function useFirebaseAuth() {
 
   // error message
   const setError = (error: any, message: string) => {
+    // eslint-disable-next-line no-console
     console.error(error);
     toastErrorMessage(message);
     setIsError(true);
@@ -49,6 +50,7 @@ export default function useFirebaseAuth() {
   const setSuccess = (message: string) => {
     setIsError(false);
     setIsLoading(false);
+    // eslint-disable-next-line no-console
     console.log(message);
   };
 

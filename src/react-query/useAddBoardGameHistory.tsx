@@ -1,7 +1,7 @@
 // firebase
 import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 // react-query
-import keystore from "./keystore";
+import queryKeys from "./keystore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 // types
 import { z } from "zod";
@@ -16,7 +16,9 @@ export default function useAddBoardGameHistory() {
       createBoardGameHistory(data),
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: [...keystore.boardGameHistoryKeys.readAllBoardGameHistory],
+        queryKey: [
+          ...queryKeys.boardGameHistory.readAllBoardGameHistory.queryKey,
+        ],
       }),
   });
 }

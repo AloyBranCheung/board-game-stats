@@ -2,7 +2,7 @@
 import useFirebaseBoardGameDb from "src/hooks/useFirebaseBoardGameDb";
 // react-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import boardGameOptionsKeys from "./keystore/boardGameOptionsKeyStore";
+import queryKeys from "./keystore";
 // types/validators
 import { z } from "zod";
 import { boardGameOptionSchema } from "src/validators/BoardGameHistoryValidation";
@@ -18,7 +18,7 @@ export default function useAddBoardGameOptions() {
     },
     onSuccess: (data) =>
       queryClient.setQueriesData(
-        boardGameOptionsKeys.readAllBoardGameOptions,
+        queryKeys.boardGameOptions.readAllBoardGameOptions.queryKey,
         data
       ),
   });
