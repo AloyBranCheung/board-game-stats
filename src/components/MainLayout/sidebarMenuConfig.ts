@@ -12,6 +12,10 @@ const menuOptions: MenuOptions[] = [
     name: "Manage Stats",
     route: "/managestats",
   },
+  {
+    name: "Wingspan Calculator",
+    route: "/wingspancalculator",
+  },
 ];
 
 export default menuOptions;

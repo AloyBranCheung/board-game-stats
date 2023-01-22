@@ -18,8 +18,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 // custom hook
 import useFirebaseAuth from "src/hooks/useFirebaseAuth";
 import SidebarMenuOptions from "./SidebarMenuOptions";
+import { useRouter } from "next/router";
 
 export default function TopNavbar() {
+  const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useAtom(isSidebarOpenAtom);
   const { logout } = useFirebaseAuth();
   const trigger = useScrollTrigger({
@@ -42,7 +44,12 @@ export default function TopNavbar() {
             >
               <MenuIcon />
             </IconButton>
-            <Typography>Who will rule the world?</Typography>
+            <Typography
+              sx={{ cursor: "pointer" }}
+              onClick={() => router.push("/")}
+            >
+              Who will rule the world?
+            </Typography>
           </Box>
           <PrimaryButton onClick={() => logout()}>
             <Typography>Logout</Typography>

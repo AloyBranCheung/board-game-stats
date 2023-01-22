@@ -10,21 +10,23 @@ import { PieChartData } from "src/@types/ChartTypes";
 import pxToRem from "src/utils/pxToRem";
 
 interface OverallWinsPieChartProps {
+  cardTitle: string;
   pieChartData: PieChartData;
   isLoading: boolean;
 }
 
-export default function OverallWinsPieChart({
+export default function OverallStatPieChart({
   pieChartData,
   isLoading,
+  cardTitle,
 }: OverallWinsPieChartProps) {
   const { labels, tooltipDataLabel, data, backgroundColors, borderColors } =
     pieChartData;
 
   return (
     <PrimaryCard>
-      <Typography sx={{ marginBottom: "1.25rem" }} variant="h5">
-        Overall Wins
+      <Typography sx={{ marginBottom: 3 }} variant="h5">
+        {cardTitle}
       </Typography>
       <Box width="100%" maxHeight="35vh" display="flex" justifyContent="center">
         {isLoading ? (
