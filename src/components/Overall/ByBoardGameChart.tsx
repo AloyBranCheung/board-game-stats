@@ -1,8 +1,9 @@
 import React from "react";
 import { Box, Typography, SelectChangeEvent, Skeleton } from "@mui/material";
 // components
-import PrimayCard from "../UI/PrimayCard";
+import PrimaryCard from "../UI/PrimaryCard";
 import PrimarySelect from "../UI/PrimarySelect";
+import OverallStatPieChart from "./OverallStatPieChart";
 // types
 import { MenuItem } from "src/@types/Generics";
 // utils
@@ -27,7 +28,7 @@ export default function ByBoardGameChart({
   isLoading,
 }: ByBoardGameChartProps) {
   return (
-    <PrimayCard>
+    <PrimaryCard>
       <Box display="flex" flexDirection="column" gap={3}>
         <Typography variant="h5">By Board Games</Typography>
         {isLoading ? (
@@ -41,10 +42,18 @@ export default function ByBoardGameChart({
                 onSelectChange={onSelectChange}
               />
             </Box>
-            <Box>Graph</Box>
+            <Box>
+              <OverallStatPieChart
+                pieChartData={{
+                  labels: ["test"],
+                  tooltipDataLabel: "test1",
+                  data: [1],
+                }}
+              />
+            </Box>
           </>
         )}
       </Box>
-    </PrimayCard>
+    </PrimaryCard>
   );
 }

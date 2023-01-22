@@ -3,16 +3,14 @@ import React from "react";
 import { Typography, Box, Skeleton } from "@mui/material";
 // chatjs2
 import PieChart from "src/components/Charts/PieChart";
-// components
-import PrimaryCard from "src/components/UI/PrimayCard";
 // types
 import { PieChartData } from "src/@types/ChartTypes";
 import pxToRem from "src/utils/pxToRem";
 
 interface OverallWinsPieChartProps {
-  cardTitle: string;
+  cardTitle?: string;
   pieChartData: PieChartData;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 export default function OverallStatPieChart({
@@ -24,10 +22,12 @@ export default function OverallStatPieChart({
     pieChartData;
 
   return (
-    <PrimaryCard>
-      <Typography sx={{ marginBottom: 3 }} variant="h5">
-        {cardTitle}
-      </Typography>
+    <Box>
+      {cardTitle && (
+        <Typography sx={{ marginBottom: 3 }} variant="h5">
+          {cardTitle}
+        </Typography>
+      )}
       <Box width="100%" maxHeight="35vh" display="flex" justifyContent="center">
         {isLoading ? (
           <Skeleton variant="rounded" width="100%" height={pxToRem(200)} />
@@ -41,6 +41,11 @@ export default function OverallStatPieChart({
           />
         )}
       </Box>
-    </PrimaryCard>
+    </Box>
   );
 }
+
+OverallStatPieChart.defaultProps = {
+  cardTitle: undefined,
+  isLoading: undefined,
+};

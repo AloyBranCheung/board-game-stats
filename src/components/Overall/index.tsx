@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 // mui
 import { Container, Grid, SelectChangeEvent } from "@mui/material";
 // components
+import PrimaryCard from "../UI/PrimaryCard";
 import OverallStatPieChart from "./OverallStatPieChart";
 import ByBoardGameChart from "./ByBoardGameChart";
 // types
@@ -95,18 +96,22 @@ export default function Overall({ isLoading, data }: OverallProps) {
     <Container sx={{ padding: "1.25rem 0" }}>
       <Grid container spacing={2}>
         <Grid item sm={12} md={6}>
-          <OverallStatPieChart
-            cardTitle="Overall Wins"
-            isLoading={isLoading}
-            pieChartData={pieChartWinsData}
-          />
+          <PrimaryCard>
+            <OverallStatPieChart
+              cardTitle="Overall Wins"
+              isLoading={isLoading}
+              pieChartData={pieChartWinsData}
+            />
+          </PrimaryCard>
         </Grid>
         <Grid item sm={12} md={6}>
-          <OverallStatPieChart
-            cardTitle="Overall Losses"
-            isLoading={isLoading}
-            pieChartData={pieChartLossesData}
-          />
+          <PrimaryCard>
+            <OverallStatPieChart
+              cardTitle="Overall Losses"
+              isLoading={isLoading}
+              pieChartData={pieChartLossesData}
+            />
+          </PrimaryCard>
         </Grid>
         <Grid item sm={12}>
           <ByBoardGameChart
