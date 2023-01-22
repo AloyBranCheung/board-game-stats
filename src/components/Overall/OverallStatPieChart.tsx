@@ -25,7 +25,7 @@ export default function OverallStatPieChart({
 
   return (
     <PrimaryCard>
-      <Typography sx={{ marginBottom: "1.25rem" }} variant="h5">
+      <Typography sx={{ marginBottom: 3 }} variant="h5">
         {cardTitle}
       </Typography>
       <Box width="100%" maxHeight="35vh" display="flex" justifyContent="center">

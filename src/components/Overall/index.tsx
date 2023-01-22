@@ -1,11 +1,13 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 // mui
-import { Container, Grid } from "@mui/material";
+import { Container, Grid, SelectChangeEvent } from "@mui/material";
 // components
 import OverallStatPieChart from "./OverallStatPieChart";
+import ByBoardGameChart from "./ByBoardGameChart";
 // types
 import { BoardGameHistoryDb } from "src/@types/BoardGameTypes";
 import { PieChartData } from "src/@types/ChartTypes";
+import { MenuItem } from "src/@types/Generics";
 
 interface OverallProps {
   isLoading: boolean;
@@ -13,6 +15,7 @@ interface OverallProps {
 }
 
 export default function Overall({ isLoading, data }: OverallProps) {
+  // overall wins/losses
   const { pieChartWinsData, pieChartLossesData } = useMemo(() => {
     // wins
     const pieChartWinsData: PieChartData = {
@@ -59,6 +62,35 @@ export default function Overall({ isLoading, data }: OverallProps) {
     return { pieChartWinsData, pieChartLossesData };
   }, [data]);
 
+  // board game selection
+  const [listOfBoardGames, setListOfBoardGames] = useState<MenuItem[]>([]);
+  const [selectedBoardGame, setSelectedBoardGame] = useState<string>("");
+
+  const handleSelectMenuChange = (event: SelectChangeEvent) => {
+    const menuSelected = event.target.value;
+    setSelectedBoardGame(menuSelected);
+  };
+
+  useEffect(() => {
+    if (data.length !== 0) {
+      const boardGameList: MenuItem[] = [];
+      data.forEach((boardGameHistoryObj) => {
+        if (
+          !boardGameList.some(
+            (historyObj) => historyObj.name === boardGameHistoryObj.boardGame
+          )
+        )
+          boardGameList.push({
+            name: boardGameHistoryObj.boardGame,
+            value: boardGameHistoryObj._id,
+          });
+      });
+
+      setSelectedBoardGame(boardGameList[0].value);
+      setListOfBoardGames(boardGameList);
+    }
+  }, [data]);
+
   return (
     <Container sx={{ padding: "1.25rem 0" }}>
       <Grid container spacing={2}>
@@ -77,7 +109,12 @@ export default function Overall({ isLoading, data }: OverallProps) {
           />
         </Grid>
         <Grid item sm={12}>
-          <div>By Board Game</div>
+          <ByBoardGameChart
+            isLoading={isLoading}
+            listOfBoardGames={listOfBoardGames}
+            selectedItem={selectedBoardGame}
+            onSelectChange={handleSelectMenuChange}
+          />
         </Grid>
       </Grid>
     </Container>
