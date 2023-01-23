@@ -1,11 +1,18 @@
 import React from "react";
-import { Box, Typography, SelectChangeEvent, Skeleton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  SelectChangeEvent,
+  Skeleton,
+  Grid,
+} from "@mui/material";
 // components
 import PrimaryCard from "../UI/PrimaryCard";
 import PrimarySelect from "../UI/PrimarySelect";
 import OverallStatPieChart from "./OverallStatPieChart";
 // types
 import { MenuItem } from "src/@types/Generics";
+import { PieChartData } from "src/@types/ChartTypes";
 // utils
 import pxToRem from "src/utils/pxToRem";
 
@@ -19,6 +26,7 @@ interface ByBoardGameChartProps {
     // eslint-disable-next-line no-unused-vars
     child: React.ReactNode
   ) => void;
+  pieChartData: PieChartData;
 }
 
 export default function ByBoardGameChart({
@@ -26,6 +34,7 @@ export default function ByBoardGameChart({
   selectedItem,
   onSelectChange,
   isLoading,
+  pieChartData,
 }: ByBoardGameChartProps) {
   return (
     <PrimaryCard>
@@ -42,15 +51,20 @@ export default function ByBoardGameChart({
                 onSelectChange={onSelectChange}
               />
             </Box>
-            <Box>
-              <OverallStatPieChart
-                pieChartData={{
-                  labels: ["test"],
-                  tooltipDataLabel: "test1",
-                  data: [1],
-                }}
-              />
-            </Box>
+            <Grid container>
+              <Grid item sm={12} md={6}>
+                <OverallStatPieChart
+                  cardTitle="Wins by Board Game"
+                  pieChartData={pieChartData}
+                />
+              </Grid>
+              <Grid item sm={12} md={6}>
+                <OverallStatPieChart
+                  cardTitle="Wins by Board Game"
+                  pieChartData={pieChartData}
+                />
+              </Grid>
+            </Grid>
           </>
         )}
       </Box>

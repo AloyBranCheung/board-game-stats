@@ -72,6 +72,48 @@ export default function Overall({ isLoading, data }: OverallProps) {
     setSelectedBoardGame(menuSelected);
   };
 
+  const byBoardGamesData = useMemo(() => {
+    if (data.length !== 0 && data.length >= 1) {
+      const sortedByBoardGames: {
+        [boardGameName: string]: BoardGameHistoryDb[];
+      } = {};
+      data.forEach((boardGameHistoryObj) => {
+        if (!(boardGameHistoryObj.boardGame in sortedByBoardGames)) {
+          sortedByBoardGames[boardGameHistoryObj.boardGame] = [
+            boardGameHistoryObj,
+          ];
+        } else {
+          sortedByBoardGames[boardGameHistoryObj.boardGame].push(
+            boardGameHistoryObj
+          );
+        }
+      });
+
+      if (selectedBoardGame.length >= 1) {
+        const filteredBoardGameWinsData: PieChartData = {
+          labels: [],
+          tooltipDataLabel: "Wins",
+          data: [],
+        };
+        const userWins: { [user: string]: number } = {};
+
+        sortedByBoardGames[selectedBoardGame].forEach((boardGame) => {
+          if (!filteredBoardGameWinsData.labels.includes(boardGame.winner))
+            filteredBoardGameWinsData.labels.push(boardGame.winner);
+          if (!(boardGame.winner in userWins)) {
+            userWins[boardGame.winner] = 1;
+          } else {
+            userWins[boardGame.winner] += 1;
+          }
+        });
+
+        filteredBoardGameWinsData.data = Object.values(userWins);
+
+        return filteredBoardGameWinsData;
+      }
+    }
+  }, [data, selectedBoardGame]);
+
   useEffect(() => {
     if (data.length !== 0) {
       const boardGameList: MenuItem[] = [];
@@ -83,7 +125,7 @@ export default function Overall({ isLoading, data }: OverallProps) {
         )
           boardGameList.push({
             name: boardGameHistoryObj.boardGame,
-            value: boardGameHistoryObj._id,
+            value: boardGameHistoryObj.boardGame,
           });
       });
 
@@ -119,6 +161,9 @@ export default function Overall({ isLoading, data }: OverallProps) {
             listOfBoardGames={listOfBoardGames}
             selectedItem={selectedBoardGame}
             onSelectChange={handleSelectMenuChange}
+            pieChartData={
+              byBoardGamesData || { labels: [], tooltipDataLabel: "", data: [] }
+            }
           />
         </Grid>
       </Grid>
