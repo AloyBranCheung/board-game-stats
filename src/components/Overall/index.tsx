@@ -57,7 +57,9 @@ export default function Overall({ isLoading, data }: OverallProps) {
     });
 
     pieChartWinsData.data = Object.values(userWins);
+    pieChartWinsData.labels.sort((a, b) => a.localeCompare(b));
     pieChartLossesData.data = Object.values(userLosses);
+    pieChartLossesData.labels.sort((a, b) => a.localeCompare(b));
 
     // return wins/losses overall obj
     return { pieChartWinsData, pieChartLossesData };
@@ -90,14 +92,24 @@ export default function Overall({ isLoading, data }: OverallProps) {
       });
 
       if (selectedBoardGame.length >= 1) {
+        // wins
         const filteredBoardGameWinsData: PieChartData = {
           labels: [],
           tooltipDataLabel: "Wins",
           data: [],
         };
         const userWins: { [user: string]: number } = {};
+        // losses
+        const filteredBoardGameLossesData: PieChartData = {
+          labels: [],
+          tooltipDataLabel: "Losses",
+          data: [],
+        };
+        const userLosses: { [user: string]: number } = {};
 
+        // logic
         sortedByBoardGames[selectedBoardGame].forEach((boardGame) => {
+          // wins
           if (!filteredBoardGameWinsData.labels.includes(boardGame.winner))
             filteredBoardGameWinsData.labels.push(boardGame.winner);
           if (!(boardGame.winner in userWins)) {
@@ -105,11 +117,21 @@ export default function Overall({ isLoading, data }: OverallProps) {
           } else {
             userWins[boardGame.winner] += 1;
           }
+          // losses
+          if (!filteredBoardGameLossesData.labels.includes(boardGame.loser))
+            filteredBoardGameLossesData.labels.push(boardGame.loser);
+          if (!(boardGame.loser in userLosses)) {
+            userLosses[boardGame.loser] = 1;
+          } else {
+            userLosses[boardGame.loser] += 1;
+          }
         });
-
         filteredBoardGameWinsData.data = Object.values(userWins);
+        filteredBoardGameWinsData.labels.sort((a, b) => a.localeCompare(b));
+        filteredBoardGameLossesData.data = Object.values(userLosses);
+        filteredBoardGameLossesData.labels.sort((a, b) => a.localeCompare(b));
 
-        return filteredBoardGameWinsData;
+        return { filteredBoardGameWinsData, filteredBoardGameLossesData };
       }
     }
   }, [data, selectedBoardGame]);
@@ -161,8 +183,19 @@ export default function Overall({ isLoading, data }: OverallProps) {
             listOfBoardGames={listOfBoardGames}
             selectedItem={selectedBoardGame}
             onSelectChange={handleSelectMenuChange}
-            pieChartData={
-              byBoardGamesData || { labels: [], tooltipDataLabel: "", data: [] }
+            winsByBoardGame={
+              byBoardGamesData?.filteredBoardGameWinsData || {
+                labels: [],
+                tooltipDataLabel: "",
+                data: [],
+              }
+            }
+            lossesByBoardGames={
+              byBoardGamesData?.filteredBoardGameLossesData || {
+                labels: [],
+                tooltipDataLabel: "",
+                data: [],
+              }
             }
           />
         </Grid>

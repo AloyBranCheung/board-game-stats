@@ -26,7 +26,8 @@ interface ByBoardGameChartProps {
     // eslint-disable-next-line no-unused-vars
     child: React.ReactNode
   ) => void;
-  pieChartData: PieChartData;
+  winsByBoardGame: PieChartData;
+  lossesByBoardGames: PieChartData;
 }
 
 export default function ByBoardGameChart({
@@ -34,7 +35,8 @@ export default function ByBoardGameChart({
   selectedItem,
   onSelectChange,
   isLoading,
-  pieChartData,
+  winsByBoardGame,
+  lossesByBoardGames,
 }: ByBoardGameChartProps) {
   return (
     <PrimaryCard>
@@ -51,17 +53,17 @@ export default function ByBoardGameChart({
                 onSelectChange={onSelectChange}
               />
             </Box>
-            <Grid container>
+            <Grid container spacing={2}>
               <Grid item sm={12} md={6}>
                 <OverallStatPieChart
                   cardTitle="Wins by Board Game"
-                  pieChartData={pieChartData}
+                  pieChartData={winsByBoardGame}
                 />
               </Grid>
               <Grid item sm={12} md={6}>
                 <OverallStatPieChart
-                  cardTitle="Wins by Board Game"
-                  pieChartData={pieChartData}
+                  cardTitle="Losses by Board Game"
+                  pieChartData={lossesByBoardGames}
                 />
               </Grid>
             </Grid>
