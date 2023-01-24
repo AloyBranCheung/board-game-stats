@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 // mui
 import { Container, Grid, SelectChangeEvent } from "@mui/material";
 // components
+import PrimaryCard from "../UI/PrimaryCard";
 import OverallStatPieChart from "./OverallStatPieChart";
 import ByBoardGameChart from "./ByBoardGameChart";
 // types
@@ -56,7 +57,9 @@ export default function Overall({ isLoading, data }: OverallProps) {
     });
 
     pieChartWinsData.data = Object.values(userWins);
+    pieChartWinsData.labels.sort((a, b) => a.localeCompare(b));
     pieChartLossesData.data = Object.values(userLosses);
+    pieChartLossesData.labels.sort((a, b) => a.localeCompare(b));
 
     // return wins/losses overall obj
     return { pieChartWinsData, pieChartLossesData };
@@ -71,6 +74,68 @@ export default function Overall({ isLoading, data }: OverallProps) {
     setSelectedBoardGame(menuSelected);
   };
 
+  const byBoardGamesData = useMemo(() => {
+    if (data.length !== 0 && data.length >= 1) {
+      const sortedByBoardGames: {
+        [boardGameName: string]: BoardGameHistoryDb[];
+      } = {};
+      data.forEach((boardGameHistoryObj) => {
+        if (!(boardGameHistoryObj.boardGame in sortedByBoardGames)) {
+          sortedByBoardGames[boardGameHistoryObj.boardGame] = [
+            boardGameHistoryObj,
+          ];
+        } else {
+          sortedByBoardGames[boardGameHistoryObj.boardGame].push(
+            boardGameHistoryObj
+          );
+        }
+      });
+
+      if (selectedBoardGame.length >= 1) {
+        // wins
+        const filteredBoardGameWinsData: PieChartData = {
+          labels: [],
+          tooltipDataLabel: "Wins",
+          data: [],
+        };
+        const userWins: { [user: string]: number } = {};
+        // losses
+        const filteredBoardGameLossesData: PieChartData = {
+          labels: [],
+          tooltipDataLabel: "Losses",
+          data: [],
+        };
+        const userLosses: { [user: string]: number } = {};
+
+        // logic
+        sortedByBoardGames[selectedBoardGame].forEach((boardGame) => {
+          // wins
+          if (!filteredBoardGameWinsData.labels.includes(boardGame.winner))
+            filteredBoardGameWinsData.labels.push(boardGame.winner);
+          if (!(boardGame.winner in userWins)) {
+            userWins[boardGame.winner] = 1;
+          } else {
+            userWins[boardGame.winner] += 1;
+          }
+          // losses
+          if (!filteredBoardGameLossesData.labels.includes(boardGame.loser))
+            filteredBoardGameLossesData.labels.push(boardGame.loser);
+          if (!(boardGame.loser in userLosses)) {
+            userLosses[boardGame.loser] = 1;
+          } else {
+            userLosses[boardGame.loser] += 1;
+          }
+        });
+        filteredBoardGameWinsData.data = Object.values(userWins);
+        filteredBoardGameWinsData.labels.sort((a, b) => a.localeCompare(b));
+        filteredBoardGameLossesData.data = Object.values(userLosses);
+        filteredBoardGameLossesData.labels.sort((a, b) => a.localeCompare(b));
+
+        return { filteredBoardGameWinsData, filteredBoardGameLossesData };
+      }
+    }
+  }, [data, selectedBoardGame]);
+
   useEffect(() => {
     if (data.length !== 0) {
       const boardGameList: MenuItem[] = [];
@@ -82,7 +147,7 @@ export default function Overall({ isLoading, data }: OverallProps) {
         )
           boardGameList.push({
             name: boardGameHistoryObj.boardGame,
-            value: boardGameHistoryObj._id,
+            value: boardGameHistoryObj.boardGame,
           });
       });
 
@@ -95,18 +160,22 @@ export default function Overall({ isLoading, data }: OverallProps) {
     <Container sx={{ padding: "1.25rem 0" }}>
       <Grid container spacing={2}>
         <Grid item sm={12} md={6}>
-          <OverallStatPieChart
-            cardTitle="Overall Wins"
-            isLoading={isLoading}
-            pieChartData={pieChartWinsData}
-          />
+          <PrimaryCard>
+            <OverallStatPieChart
+              cardTitle="Overall Wins"
+              isLoading={isLoading}
+              pieChartData={pieChartWinsData}
+            />
+          </PrimaryCard>
         </Grid>
         <Grid item sm={12} md={6}>
-          <OverallStatPieChart
-            cardTitle="Overall Losses"
-            isLoading={isLoading}
-            pieChartData={pieChartLossesData}
-          />
+          <PrimaryCard>
+            <OverallStatPieChart
+              cardTitle="Overall Losses"
+              isLoading={isLoading}
+              pieChartData={pieChartLossesData}
+            />
+          </PrimaryCard>
         </Grid>
         <Grid item sm={12}>
           <ByBoardGameChart
@@ -114,6 +183,20 @@ export default function Overall({ isLoading, data }: OverallProps) {
             listOfBoardGames={listOfBoardGames}
             selectedItem={selectedBoardGame}
             onSelectChange={handleSelectMenuChange}
+            winsByBoardGame={
+              byBoardGamesData?.filteredBoardGameWinsData || {
+                labels: [],
+                tooltipDataLabel: "",
+                data: [],
+              }
+            }
+            lossesByBoardGames={
+              byBoardGamesData?.filteredBoardGameLossesData || {
+                labels: [],
+                tooltipDataLabel: "",
+                data: [],
+              }
+            }
           />
         </Grid>
       </Grid>
