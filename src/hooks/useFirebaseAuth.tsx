@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 // validators
 import loginSchema from "src/validators/LoginValidation";
+import { getDatabase } from "firebase/database";
 
 //  Firebase configuration
 const firebaseConfig = {
@@ -26,9 +27,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig, "firebase");
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
+// basic config for CRUD actions
+export const database = getDatabase(app);
 
 export default function useFirebaseAuth() {
   const router = useRouter();
@@ -77,6 +80,17 @@ export default function useFirebaseAuth() {
     }
   };
 
+  const getUserIdToken = async () => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      return token;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      return "";
+    }
+  };
+
   useEffect(() => {
     const loginState = async () => {
       setIsLoading(true);
@@ -95,5 +109,13 @@ export default function useFirebaseAuth() {
 
   const userProfile = auth.currentUser;
 
-  return { login, logout, isLoading, isError, isLoggedIn, userProfile };
+  return {
+    login,
+    logout,
+    isLoading,
+    isError,
+    isLoggedIn,
+    userProfile,
+    getUserIdToken,
+  };
 }

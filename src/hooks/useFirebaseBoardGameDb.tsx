@@ -4,18 +4,9 @@ import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
 // firebase
 import useFirebaseAuth from "./useFirebaseAuth";
-import {
-  getDatabase,
-  update,
-  ref,
-  get,
-  set,
-  child,
-  push,
-  remove,
-} from "firebase/database";
+import { update, ref, get, set, child, push, remove } from "firebase/database";
 import { handleDbError, handleDbSuccess } from "./utils";
-
+import { database } from "./useFirebaseAuth";
 // types/validators
 import { z } from "zod";
 import {
@@ -32,9 +23,6 @@ export default function useFirebaseBoardGameDb() {
   const { userProfile } = useFirebaseAuth(); // userProfile.uid
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // basic config for CRUD actions
-  const database = getDatabase();
 
   // create single board game win/loss obj
   const createBoardGameHistory = async (

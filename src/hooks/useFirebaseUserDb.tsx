@@ -1,14 +1,7 @@
 import { useState } from "react";
 import useFirebaseAuth from "./useFirebaseAuth";
-import {
-  getDatabase,
-  ref,
-  update,
-  child,
-  push,
-  get,
-  remove,
-} from "firebase/database";
+import { ref, update, child, push, get, remove } from "firebase/database";
+import { database } from "./useFirebaseAuth";
 // react-toastify
 import useToastErrorMessage from "./useToastErrorMessage";
 import useToastSuccessMessage from "./useToastSuccessMessage";
@@ -25,7 +18,6 @@ import { fromZodError } from "zod-validation-error";
 
 export default function useFirebaseUserDb() {
   const { userProfile } = useFirebaseAuth();
-  const database = getDatabase();
   const toastErrorMessage = useToastErrorMessage();
   const toastSuccessMessage = useToastSuccessMessage();
   const [isLoading, setIsLoading] = useState(false);
