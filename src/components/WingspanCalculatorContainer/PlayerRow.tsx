@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-// socketio
-import io from "Socket.IO-client";
+import React from "react";
+// socket
+import { socket } from "src/utils/socket";
 // mui
 import { Card, Box } from "@mui/material";
 // hooks
@@ -8,22 +8,10 @@ import useFirebaseAuth from "src/hooks/useFirebaseAuth";
 // add react-query later
 import axios from "axios";
 
-let socket;
-
 export default function PlayerRow() {
   const { getUserIdToken } = useFirebaseAuth();
 
-  const socketInitializer = async () => {
-    await fetch("/api/socket");
-    socket = io();
-
-    socket.on("connect", () => {
-      console.log("connected");
-    });
-  };
-  useEffect(() => {
-    socketInitializer();
-  }, []);
+  socket.on("connect", () => console.log("connected"));
 
   return (
     <Card sx={{ padding: "1.25rem" }}>
