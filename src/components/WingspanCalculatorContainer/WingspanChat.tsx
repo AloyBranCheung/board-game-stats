@@ -1,9 +1,17 @@
 import React from "react";
+// types
+import { WingspanChatMessage } from "src/@types/chat";
 
 export interface WingspanChatProps {
-  messages: string[];
+  messages: WingspanChatMessage[];
 }
 
 export default function WingspanChat({ messages }: WingspanChatProps) {
-  return <div>WingspanChat</div>;
+  return (
+    <div>
+      {messages.map((message) => (
+        <div key={message.id}>{message.message}</div>
+      ))}
+    </div>
+  );
 }

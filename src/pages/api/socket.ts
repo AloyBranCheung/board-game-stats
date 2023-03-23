@@ -3,8 +3,13 @@
 import type { NextApiRequest } from "next";
 import { NextApiResponseWithSocket } from "src/@types/socketTypes";
 import { Server } from "socket.io";
+import { uuid } from "uuidv4";
 // auth
 import isAuthenticated from "src/utils/isAuthenticated";
+// types
+import { WingspanChatMessage } from "src/@types/chat";
+
+const CHAT_BOT = "Jabba";
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,14 +35,31 @@ export default async function handler(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
 
-                socket.on("messageFromClient", (message: string) => {
-                  socket.broadcast.emit("messageFromServer", message);
+                // when user joins will emit this
+                socket.broadcast.emit("messageFromServer", {
+                  id: uuid(),
+                  username: CHAT_BOT,
+                  message: "A user has entered the chat. Welcome :D",
+                  _createdAt: Date.now(), // unix date here
                 });
+
+                socket.on(
+                  "messageFromClient",
+                  (message: WingspanChatMessage) => {
+                    socket.broadcast.emit("messageFromServer", message);
+                  }
+                );
 
                 socket.on("disconnect", () => {
                   console.log(
                     `${decodedToken?.decodedToken?.email} has disconnected`
                   );
+                  socket.broadcast.emit("messageFromServer", {
+                    id: uuid(),
+                    username: CHAT_BOT,
+                    message: "A user has left the chat :c",
+                    _createdAt: Date.now(), // unix date here
+                  });
                 });
               });
             }

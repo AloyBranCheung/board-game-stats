@@ -21,7 +21,7 @@ export default function useSocketIo() {
 
     socket.on("connect", () => {
       // eslint-disable-next-line no-console
-      console.log("connected");
+      console.log("connected to server");
     });
   };
 
