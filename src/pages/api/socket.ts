@@ -3,13 +3,13 @@
 import type { NextApiRequest } from "next";
 import { NextApiResponseWithSocket } from "src/@types/socketTypes";
 import { Server } from "socket.io";
-import { uuid } from "uuidv4";
+import { v4 as uuid } from "uuid";
 // auth
 import isAuthenticated from "src/utils/isAuthenticated";
 // types
 import { WingspanChatMessage } from "src/@types/chat";
 
-const CHAT_BOT = "Jabba";
+const CHAT_BOT = "Jabba🖱️";
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,7 +36,7 @@ export default async function handler(
                 );
 
                 // when user joins will emit this
-                socket.broadcast.emit("messageFromServer", {
+                io.emit("messageFromServer", {
                   id: uuid(),
                   username: CHAT_BOT,
                   message: "A user has entered the chat. Welcome :D",
@@ -54,7 +54,7 @@ export default async function handler(
                   console.log(
                     `${decodedToken?.decodedToken?.email} has disconnected`
                   );
-                  socket.broadcast.emit("messageFromServer", {
+                  io.emit("messageFromServer", {
                     id: uuid(),
                     username: CHAT_BOT,
                     message: "A user has left the chat :c",

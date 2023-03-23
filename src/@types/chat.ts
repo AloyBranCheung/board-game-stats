@@ -1,5 +1,5 @@
 export interface WingspanChatMessage {
-  id: number;
+  id: string;
   username: string;
   message: string;
   _createdAt: number; // unix
