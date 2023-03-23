@@ -29,6 +29,16 @@ export default async function handler(
                 console.log(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
+
+                socket.on("messageFromClient", (message: string) => {
+                  socket.broadcast.emit("messageFromServer", message);
+                });
+
+                socket.on("disconnect", () => {
+                  console.log(
+                    `${decodedToken?.decodedToken?.email} has disconnected`
+                  );
+                });
               });
             }
             return res.end();
