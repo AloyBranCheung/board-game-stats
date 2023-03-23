@@ -64,6 +64,10 @@ export default async function handler(
                   }
                 );
 
+                socket.on("isTyping", (status: boolean) => {
+                  socket.broadcast.emit("isTyping", status);
+                });
+
                 socket.on("disconnect", () => {
                   console.log(
                     `${decodedToken?.decodedToken?.email} has disconnected`

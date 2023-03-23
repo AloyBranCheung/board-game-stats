@@ -17,9 +17,11 @@ export interface WingspanChatProps {
   messageText: string;
   onClickSend: () => void;
   username: string;
+  isTyping: boolean;
 }
 
 export default function WingspanChat({
+  isTyping,
   messages,
   username,
   onChangeUsername,
@@ -97,6 +99,7 @@ export default function WingspanChat({
         {messagesReceived}
       </Box>
       <Box>
+        {isTyping && <Typography>Someone is typing...</Typography>}
         <SendMessage
           onChangeMessageText={onChangeMessageText}
           messageText={messageText}
