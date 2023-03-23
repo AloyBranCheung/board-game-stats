@@ -22,6 +22,7 @@ export default function SendMessage({
         sx={{
           "& .MuiInputBase-input": {
             padding: 0,
+            paddingLeft: ".25rem",
           },
           width: "100%",
         }}

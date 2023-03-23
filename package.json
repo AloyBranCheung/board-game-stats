@@ -33,6 +33,7 @@
     "eslint-config-next": "13.1.1",
     "firebase": "^9.15.0",
     "firebase-admin": "^11.5.0",
+    "friendly-username-generator": "^2.0.4",
     "jotai": "^1.12.1",
     "material-react-table": "^1.5.4",
     "next": "13.1.1",
