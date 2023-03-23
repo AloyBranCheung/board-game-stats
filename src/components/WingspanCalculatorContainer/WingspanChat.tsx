@@ -6,6 +6,7 @@ import { Box, Card, TextField, Typography } from "@mui/material";
 // import Grid2 from "@mui/material/Unstable_Grid2";
 // types
 import { WingspanChatMessage } from "src/@types/chat";
+import pxToRem from "src/utils/pxToRem";
 
 export interface WingspanChatProps {
   messages: WingspanChatMessage[];
@@ -37,9 +38,19 @@ export default function WingspanChat({
     //     <Typography>{message.message}</Typography>
     //   </Grid2>
     // </Grid2>
-    <Box key={message.id} sx={{ display: "flex", gap: "1.25rem" }}>
-      <Typography sx={{ width: "100%", flexBasis: 120 }}>
-        {message.username}:
+    <Box
+      key={message.id}
+      sx={{
+        display: "flex",
+        gap: "1.25rem",
+        padding: ".25rem",
+        border: "1px solid black",
+        boxShadow: "5px 5px 0px 0px #000000",
+        borderRadius: pxToRem(8),
+      }}
+    >
+      <Typography component="b" sx={{ width: "100%", flexBasis: 120 }}>
+        <b>{message.username}</b>:
       </Typography>
       <Typography sx={{ width: "100%" }}>{message.message}</Typography>
     </Box>
@@ -80,7 +91,7 @@ export default function WingspanChat({
           overflow: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: ".25rem",
+          gap: ".5rem",
         }}
       >
         {messagesReceived}
