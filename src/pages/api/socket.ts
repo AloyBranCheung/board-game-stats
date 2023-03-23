@@ -6,10 +6,10 @@ import { Server } from "socket.io";
 import { v4 as uuid } from "uuid";
 // auth
 import isAuthenticated from "src/utils/isAuthenticated";
+// jabba
+import JabbaBot from "src/utils/jabbaBot";
 // types
 import { WingspanChatMessage } from "src/@types/chat";
-
-const CHAT_BOT = "Jabba🖱️";
 
 export default async function handler(
   req: NextApiRequest,
@@ -38,8 +38,12 @@ export default async function handler(
                 // when user joins will emit this
                 io.emit("messageFromServer", {
                   id: uuid(),
-                  username: CHAT_BOT,
-                  message: "A user has entered the chat. Welcome :D",
+                  username: JabbaBot.name,
+                  message:
+                    typeof JabbaBot.prefixPillow === "function" &&
+                    JabbaBot.prefixPillow(
+                      "A user has entered the chat. Welcome :D. Try '/commands' for a list of my commands."
+                    ),
                   _createdAt: Date.now(), // unix date here
                 });
 
@@ -47,8 +51,22 @@ export default async function handler(
                   "messageFromClient",
                   (message: WingspanChatMessage) => {
                     socket.broadcast.emit("messageFromServer", message);
+                    const { message: wingspanMessage } = message;
+
+                    if (wingspanMessage in JabbaBot) {
+                      io.emit("messageFromServer", {
+                        id: uuid(),
+                        username: JabbaBot.name,
+                        message: JabbaBot[wingspanMessage],
+                        _createdAt: Date.now(),
+                      });
+                    }
                   }
                 );
+
+                socket.on("isTyping", (status: boolean) => {
+                  socket.broadcast.emit("isTyping", status);
+                });
 
                 socket.on("disconnect", () => {
                   console.log(
@@ -56,8 +74,10 @@ export default async function handler(
                   );
                   io.emit("messageFromServer", {
                     id: uuid(),
-                    username: CHAT_BOT,
-                    message: "A user has left the chat :c",
+                    username: JabbaBot.name,
+                    message:
+                      typeof JabbaBot.prefixPillow === "function" &&
+                      JabbaBot.prefixPillow("A user has left the chat :c"),
                     _createdAt: Date.now(), // unix date here
                   });
                 });

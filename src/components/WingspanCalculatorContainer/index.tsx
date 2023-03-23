@@ -10,11 +10,15 @@ import useSocketIo from "src/hooks/useSocketIo";
 import { WingspanChatMessage } from "src/@types/chat";
 import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
+import { debounce } from "lodash";
 
 export default function WingspanCalculatorContainer() {
+  const [sendTimeout, setSendTimeout] = useState<NodeJS.Timeout>();
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
   const [username, setUsername] = useState(
     generateUsername({ useRandomNumber: false })
   );
+  const [isTyping, setIsTyping] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [messages, setMessages] = useState<WingspanChatMessage[]>([]);
   const socket = useSocketIo();
@@ -25,8 +29,11 @@ export default function WingspanCalculatorContainer() {
   };
 
   const handleChangeMessageText = (e: ChangeEvent<HTMLInputElement>) => {
+    clearTimeout(sendTimeout);
     const { value } = e.target;
     setMessageText(value);
+    const timeout = setTimeout(() => socket?.emit("isTyping", true), 300);
+    setSendTimeout(timeout);
   };
 
   const handleSend = () => {
@@ -49,14 +56,24 @@ export default function WingspanCalculatorContainer() {
       setMessages((prev) => [...prev, serverMessage]);
     });
 
+    socket?.on("isTyping", (status: boolean) => {
+      clearTimeout(timeoutId);
+      setIsTyping(status);
+      const timeout = setTimeout(() => setIsTyping(false), 2000);
+      setTimeoutId(timeout);
+    });
+
     return () => {
       socket?.off("messageFromServer");
     };
   }, [socket]);
 
+  console.log(isTyping);
+
   return (
     <Container sx={{ paddingTop: "1.25rem", paddingBottom: "5rem" }}>
       <WingspanChat
+        isTyping={isTyping}
         username={username}
         onChangeUsername={handleChangeUsername}
         onChangeMessageText={handleChangeMessageText}
