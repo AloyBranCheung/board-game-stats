@@ -10,7 +10,6 @@ import useSocketIo from "src/hooks/useSocketIo";
 import { WingspanChatMessage } from "src/@types/chat";
 import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
-import { debounce } from "lodash";
 
 export default function WingspanCalculatorContainer() {
   const [sendTimeout, setSendTimeout] = useState<NodeJS.Timeout>();
@@ -67,8 +66,6 @@ export default function WingspanCalculatorContainer() {
       socket?.off("messageFromServer");
     };
   }, [socket]);
-
-  console.log(isTyping);
 
   return (
     <Container sx={{ paddingTop: "1.25rem", paddingBottom: "5rem" }}>

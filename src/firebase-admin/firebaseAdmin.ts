@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { getAuth, Auth } from "firebase-admin/auth";
-const admin = require("firebase-admin");
+import admin from "firebase-admin";
 
 let auth;
 

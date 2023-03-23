@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/ban-types: 0 */
+
 enum JabbaBotCommands {
   Commands = "/commands",
   Hello = "/hello",

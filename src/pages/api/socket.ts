@@ -16,9 +16,9 @@ export default async function handler(
   res: NextApiResponseWithSocket
 ) {
   const method = req.method;
+  const token = req.headers.authorization?.split(" ")[1];
   switch (method) {
     case "GET":
-      const token = req.headers.authorization?.split(" ")[1];
       if (token) {
         try {
           const decodedToken = await isAuthenticated(token);
