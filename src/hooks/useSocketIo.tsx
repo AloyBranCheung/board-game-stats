@@ -1,30 +1,29 @@
 import axios from "axios";
-import { useEffect, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 // hooks
 import useFirebaseAuth from "./useFirebaseAuth";
 
-let socket: Socket;
-
 export default function useSocketIo() {
   const { getUserIdToken } = useFirebaseAuth();
-  const socketInitializer = useCallback(() => {
-    (async () => {
-      const token = await getUserIdToken();
+  const [socket, setSocket] = useState<Socket>();
+  const socketInitializer = async () => {
+    const token = await getUserIdToken();
 
-      await axios.get("/api/socket", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      socket = io();
+    await axios.get("/api/socket", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const socket = io();
 
-      socket.on("connect", () => {
-        // eslint-disable-next-line no-console
-        console.log("socket connected");
-      });
-    })();
-  }, [getUserIdToken]);
+    setSocket(socket);
+
+    socket.on("connect", () => {
+      // eslint-disable-next-line no-console
+      console.log("connected");
+    });
+  };
 
   useEffect(() => {
     socketInitializer();

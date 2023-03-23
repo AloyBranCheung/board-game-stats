@@ -29,11 +29,6 @@ export default async function handler(
                 console.log(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
-
-                socket.on("hello", (arg, callback) => {
-                  console.log("hello world", arg);
-                  if (typeof callback === "function") callback("got it");
-                });
               });
             }
             return res.end();
