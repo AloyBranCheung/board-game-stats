@@ -71,10 +71,6 @@ export default function WingspanCalculatorContainer() {
     socket?.emit("scorecard", playerColumnState(username, socketId));
   };
 
-  const handleDeleteColumn = () => {
-    socket?.emit("deleteScorecard", socketId);
-  };
-
   /* -------------------------------------------------------------------------- */
   // useEffect to attach socket listeners
   useEffect(() => {
@@ -123,7 +119,6 @@ export default function WingspanCalculatorContainer() {
         messages={messages}
       />
       <Box display="flex" flexDirection="column" gap="1.25rem">
-        <button onClick={handleDeleteColumn}>Test Delete</button>
         {playerColumns.length < 5 && (
           <PrimaryButton sx={{ width: "100%" }} onClick={handleClickAddColumn}>
             Add Scorecard

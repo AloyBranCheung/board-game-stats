@@ -13,6 +13,7 @@ import { WingspanChatMessage } from "src/@types/chat";
 import { PlayerColumnObj } from "src/@types/playerColumns";
 // game state
 import GameState from "src/utils/gameState";
+import Timer from "src/utils/timer";
 
 const {
   addScorecard,
@@ -21,6 +22,8 @@ const {
   updateScorecard,
   currState,
 } = new GameState();
+
+const resetApp = new Timer(resetState);
 
 export default async function handler(
   req: NextApiRequest,
@@ -46,6 +49,8 @@ export default async function handler(
                 console.log(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
+
+                resetApp.clearTimer();
 
                 // if game in progress
                 if (currState().gameState.length > 0) {
@@ -120,12 +125,13 @@ export default async function handler(
                   const connectedClients = await io.fetchSockets();
 
                   if (connectedClients.length < 1) {
-                    resetState();
+                    resetApp.timeoutFn(900);
                   }
 
                   console.log(
                     `${decodedToken?.decodedToken?.email} has disconnected`
                   );
+
                   io.emit("messageFromServer", {
                     id: uuid(),
                     username: JabbaBot.name,
