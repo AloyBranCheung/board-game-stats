@@ -11,6 +11,16 @@ import JabbaBot from "src/utils/jabbaBot";
 // types
 import { WingspanChatMessage } from "src/@types/chat";
 import { PlayerColumnObj } from "src/@types/playerColumns";
+// game state
+import GameState from "src/utils/gameState";
+
+const {
+  addScorecard,
+  resetState,
+  deleteScorecard,
+  updateScorecard,
+  currState,
+} = new GameState();
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,6 +46,11 @@ export default async function handler(
                 console.log(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
+
+                // if game in progress
+                if (currState().gameState.length > 0) {
+                  io.emit("scorecard", currState().gameState);
+                }
 
                 // when user first joins will emit this
                 io.emit("messageFromServer", {
@@ -74,11 +89,40 @@ export default async function handler(
 
                 // scorecard share state
                 socket.on("scorecard", (scorecardObj: PlayerColumnObj) => {
-                  io.emit("scorecard", scorecardObj);
+                  if (scorecardObj.socketId in currState().gameStateHash) {
+                    io.emit("messageFromServer", {
+                      id: uuid(),
+                      username: JabbaBot.name,
+                      message:
+                        typeof JabbaBot.prefixPillow === "function" &&
+                        JabbaBot.prefixPillow("Game state exists"),
+                    });
+                    return;
+                  }
+                  if (currState().gameState.length < 5) {
+                    addScorecard(scorecardObj);
+                    io.emit("scorecard", currState().gameState);
+                  }
+                });
+
+                socket.on("deleteScorecard", (socketId: string) => {
+                  deleteScorecard(socketId);
+                  io.emit("scorecard", currState().gameState);
+                });
+
+                socket.on("updateScorecard", (scorecard: PlayerColumnObj) => {
+                  updateScorecard(scorecard);
+                  io.emit("scorecard", currState().gameState);
                 });
 
                 // user disconnects
-                socket.on("disconnect", () => {
+                socket.on("disconnect", async () => {
+                  const connectedClients = await io.fetchSockets();
+
+                  if (connectedClients.length < 1) {
+                    resetState();
+                  }
+
                   console.log(
                     `${decodedToken?.decodedToken?.email} has disconnected`
                   );

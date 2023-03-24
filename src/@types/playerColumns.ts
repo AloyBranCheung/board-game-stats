@@ -8,3 +8,13 @@ export interface PlayerColumnObj {
   foodOnCards: number;
   tuckedCards: number;
 }
+
+export interface PlayerColumnHash {
+  [socketId: string]: PlayerColumnObj;
+}
+
+export interface GameSync {
+  clientId: string; // socketId;
+  playerColumns: PlayerColumnObj[];
+  playerColumnsHash: PlayerColumnHash;
+}

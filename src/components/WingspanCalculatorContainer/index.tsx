@@ -71,6 +71,10 @@ export default function WingspanCalculatorContainer() {
     socket?.emit("scorecard", playerColumnState(username, socketId));
   };
 
+  const handleDeleteColumn = () => {
+    socket?.emit("deleteScorecard", socketId);
+  };
+
   /* -------------------------------------------------------------------------- */
   // useEffect to attach socket listeners
   useEffect(() => {
@@ -85,14 +89,19 @@ export default function WingspanCalculatorContainer() {
       setTimeoutId(timeout);
     });
 
-    socket?.on("scorecard", (serverObj: PlayerColumnObj) => {
-      setPlayerColumns([serverObj]);
+    socket?.on("scorecard", (gameState: PlayerColumnObj[]) => {
+      setPlayerColumns(gameState);
     });
 
     return () => {
-      socket?.off("messageFromServer");
+      socket?.off();
     };
-  }, [playerColumns, socket, timeoutId]);
+  }, [playerColumns, playerColumns, socket, timeoutId]);
+
+  // useEffect(() => {
+  //   socket?.emit("gameSync", { playerColumns, playerColumnsHash });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [socket]);
 
   return (
     <Container
@@ -114,9 +123,12 @@ export default function WingspanCalculatorContainer() {
         messages={messages}
       />
       <Box display="flex" flexDirection="column" gap="1.25rem">
-        <PrimaryButton sx={{ width: "100%" }} onClick={handleClickAddColumn}>
-          Add Column
-        </PrimaryButton>
+        <button onClick={handleDeleteColumn}>Test Delete</button>
+        {playerColumns.length < 5 && (
+          <PrimaryButton sx={{ width: "100%" }} onClick={handleClickAddColumn}>
+            Add Scorecard
+          </PrimaryButton>
+        )}
         <Box display="flex" gap="1.25rem">
           {allPlayerColumns}
         </Box>
