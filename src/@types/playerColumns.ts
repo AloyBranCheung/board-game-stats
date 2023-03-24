@@ -7,5 +7,4 @@ export interface PlayerColumnObj {
   eggs: number;
   foodOnCards: number;
   tuckedCards: number;
-  total: number;
 }

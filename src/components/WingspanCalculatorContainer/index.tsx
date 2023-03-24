@@ -12,7 +12,7 @@ import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
 import { PlayerColumnObj } from "src/@types/playerColumns";
 import PlayerColumn from "./PlayerColumn";
-import PlayerColumnState from "src/utils/scorecardObj";
+import playerColumnState from "src/utils/scorecardObj";
 import PrimaryButton from "../UI/PrimaryButton";
 
 export default function WingspanCalculatorContainer() {
@@ -64,11 +64,11 @@ export default function WingspanCalculatorContainer() {
           username={playerColumnObj.username}
         />
       )),
-    [playerColumns, setPlayerColumns]
+    [playerColumns]
   );
 
   const handleClickAddColumn = () => {
-    socket?.emit("scorecard", new PlayerColumnState(username, socketId));
+    socket?.emit("scorecard", playerColumnState(username, socketId));
   };
 
   /* -------------------------------------------------------------------------- */
@@ -86,18 +86,13 @@ export default function WingspanCalculatorContainer() {
     });
 
     socket?.on("scorecard", (serverObj: PlayerColumnObj) => {
-      console.log(
-        playerColumns.some((pObj) => pObj.socketId !== serverObj.socketId)
-      );
-
-      if (playerColumns.some((pObj) => pObj.socketId !== serverObj.socketId))
-        setPlayerColumns((prev) => [...prev, serverObj]);
+      setPlayerColumns([serverObj]);
     });
 
     return () => {
       socket?.off("messageFromServer");
     };
-  }, [socket]);
+  }, [playerColumns, socket, timeoutId]);
 
   return (
     <Container
