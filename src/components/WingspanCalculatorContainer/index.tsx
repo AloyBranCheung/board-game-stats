@@ -56,20 +56,34 @@ export default function WingspanCalculatorContainer() {
   };
 
   /* ----------------------------- player columns ----------------------------- */
+  const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, name, value } = e.target;
+
+    socket?.emit("updateScorecard", {
+      ...playerColumns[Number(id)],
+      [name]: value,
+    });
+  };
+
   const allPlayerColumns = useMemo(
     () =>
-      playerColumns.map((playerColumnObj) => (
+      playerColumns.map((playerColumnObj, index) => (
         <PlayerColumn
+          onChangeScorecard={handleChangeScorecard}
           key={playerColumnObj.socketId}
-          username={playerColumnObj.username}
+          indexInArray={index}
+          playerColumnObj={playerColumnObj}
         />
       )),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [playerColumns]
   );
 
   const handleClickAddColumn = () => {
     socket?.emit("scorecard", playerColumnState(username, socketId));
   };
+
+  // TODO: reset game popup modal are you sure?
 
   /* -------------------------------------------------------------------------- */
   // useEffect to attach socket listeners

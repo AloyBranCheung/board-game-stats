@@ -26,8 +26,12 @@ class GameState {
   };
 
   public updateScorecard = (scorecard: PlayerColumnObj) => {
-    this.deleteScorecard(scorecard.socketId);
-    this.gameState.push(scorecard);
+    const index = this.gameState.findIndex(
+      (obj) => obj.socketId === scorecard.socketId
+    );
+
+    this.gameState[index] = scorecard;
+    console.log(this.gameState);
     this.gameStateHash[scorecard.socketId] = scorecard;
   };
 
