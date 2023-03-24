@@ -10,6 +10,7 @@ import isAuthenticated from "src/utils/isAuthenticated";
 import JabbaBot from "src/utils/jabbaBot";
 // types
 import { WingspanChatMessage } from "src/@types/chat";
+import { PlayerColumnObj } from "src/@types/playerColumns";
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,12 +31,13 @@ export default async function handler(
               const io = new Server(res.socket.server);
               res.socket.server.io = io;
 
+              // when socket establishes a connection
               io.on("connection", (socket) => {
                 console.log(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
 
-                // when user joins will emit this
+                // when user first joins will emit this
                 io.emit("messageFromServer", {
                   id: uuid(),
                   username: JabbaBot.name,
@@ -47,6 +49,7 @@ export default async function handler(
                   _createdAt: Date.now(), // unix date here
                 });
 
+                // messaging system
                 socket.on(
                   "messageFromClient",
                   (message: WingspanChatMessage) => {
@@ -64,10 +67,17 @@ export default async function handler(
                   }
                 );
 
+                // typing status
                 socket.on("isTyping", (status: boolean) => {
                   socket.broadcast.emit("isTyping", status);
                 });
 
+                // scorecard share state
+                socket.on("scorecard", (scorecardObj: PlayerColumnObj) => {
+                  io.emit("scorecard", scorecardObj);
+                });
+
+                // user disconnects
                 socket.on("disconnect", () => {
                   console.log(
                     `${decodedToken?.decodedToken?.email} has disconnected`

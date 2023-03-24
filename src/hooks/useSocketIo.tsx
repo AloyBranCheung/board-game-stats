@@ -7,6 +7,7 @@ import useFirebaseAuth from "./useFirebaseAuth";
 export default function useSocketIo() {
   const { getUserIdToken } = useFirebaseAuth();
   const [socket, setSocket] = useState<Socket>();
+  const [socketId, setSocketId] = useState<string>("");
   const socketInitializer = async () => {
     const token = await getUserIdToken();
 
@@ -22,13 +23,17 @@ export default function useSocketIo() {
     socket.on("connect", () => {
       // eslint-disable-next-line no-console
       console.log("connected to server");
+      const sessionId = socket.id;
+      setSocketId(sessionId);
     });
   };
 
   useEffect(() => {
-    socketInitializer();
+    if (!socket) {
+      socketInitializer();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return socket;
+  return { socket, socketId };
 }
