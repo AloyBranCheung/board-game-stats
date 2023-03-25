@@ -1,15 +1,20 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState, useMemo } from "react";
 // components
 // import PlayerRow from "./PlayerRow";
 import WingspanChat from "./WingspanChat";
 // mui
-import { Container } from "@mui/material";
+import { Container, Box } from "@mui/material";
+import Grid2 from "@mui/material/Unstable_Grid2";
 // hooks
 import useSocketIo from "src/hooks/useSocketIo";
 // utils/types
 import { WingspanChatMessage } from "src/@types/chat";
 import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
+import { PlayerColumnObj } from "src/@types/playerColumns";
+import PlayerColumn from "./PlayerColumn";
+import playerColumnState from "src/utils/scorecardObj";
+import PrimaryButton from "../UI/PrimaryButton";
 
 export default function WingspanCalculatorContainer() {
   const [sendTimeout, setSendTimeout] = useState<NodeJS.Timeout>();
@@ -20,7 +25,9 @@ export default function WingspanCalculatorContainer() {
   const [isTyping, setIsTyping] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [messages, setMessages] = useState<WingspanChatMessage[]>([]);
-  const socket = useSocketIo();
+  const [playerColumns, setPlayerColumns] = useState<PlayerColumnObj[]>([]);
+  //
+  const { socket, socketId } = useSocketIo();
 
   const handleChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -49,6 +56,46 @@ export default function WingspanCalculatorContainer() {
     }
   };
 
+  /* ----------------------------- player columns ----------------------------- */
+  const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, name, value } = e.target;
+
+    socket?.emit("updateScorecard", {
+      ...playerColumns[Number(id)],
+      [name]: value,
+    });
+  };
+
+  const allPlayerColumns = useMemo(
+    () =>
+      playerColumns.map((playerColumnObj, index) => {
+        const handleDeleteColumn = () =>
+          socket?.emit("deleteScorecard", { socketId, index });
+        return (
+          <Grid2 key={playerColumnObj.socketId} xs={12} md={6} lg={4} xl={3}>
+            <PlayerColumn
+              onChangeScorecard={handleChangeScorecard}
+              indexInArray={index}
+              playerColumnObj={playerColumnObj}
+              onDeleteColumn={handleDeleteColumn}
+            />
+          </Grid2>
+        );
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [playerColumns]
+  );
+
+  const handleClickAddColumn = () => {
+    socket?.emit("scorecard", playerColumnState(username, socketId));
+  };
+
+  // TODO: reset game popup modal are you sure?
+  const handleGameReset = () => {
+    socket?.emit("resetApp");
+  };
+
+  /* -------------------------------------------------------------------------- */
   // useEffect to attach socket listeners
   useEffect(() => {
     socket?.on("messageFromServer", (serverMessage: WingspanChatMessage) => {
@@ -62,13 +109,30 @@ export default function WingspanCalculatorContainer() {
       setTimeoutId(timeout);
     });
 
+    socket?.on("scorecard", (gameState: PlayerColumnObj[]) => {
+      setPlayerColumns(gameState);
+    });
+
     return () => {
-      socket?.off("messageFromServer");
+      socket?.off();
     };
-  }, [socket]);
+  }, [playerColumns, playerColumns, socket, timeoutId]);
+
+  // useEffect(() => {
+  //   socket?.emit("gameSync", { playerColumns, playerColumnsHash });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [socket]);
 
   return (
-    <Container sx={{ paddingTop: "1.25rem", paddingBottom: "5rem" }}>
+    <Container
+      sx={{
+        paddingTop: "1.25rem",
+        paddingBottom: "5rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.25rem",
+      }}
+    >
       <WingspanChat
         isTyping={isTyping}
         username={username}
@@ -78,7 +142,21 @@ export default function WingspanCalculatorContainer() {
         onClickSend={handleSend}
         messages={messages}
       />
-      {/* <PlayerRow /> */}
+      <Box display="flex" flexDirection="column" gap="1.25rem">
+        {playerColumns.length < 5 && (
+          <PrimaryButton sx={{ width: "100%" }} onClick={handleClickAddColumn}>
+            Add Scorecard
+          </PrimaryButton>
+        )}
+        {playerColumns.length > 0 && (
+          <PrimaryButton sx={{ width: "100%" }} onClick={handleGameReset}>
+            Reset Game?
+          </PrimaryButton>
+        )}
+        <Grid2 container spacing="1.25rem">
+          {allPlayerColumns}
+        </Grid2>
+      </Box>
     </Container>
   );
 }

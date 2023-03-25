@@ -10,6 +10,20 @@ import isAuthenticated from "src/utils/isAuthenticated";
 import JabbaBot from "src/utils/jabbaBot";
 // types
 import { WingspanChatMessage } from "src/@types/chat";
+import { PlayerColumnObj } from "src/@types/playerColumns";
+// game state
+import GameState from "src/utils/gameState";
+import Timer from "src/utils/timer";
+
+const {
+  addScorecard,
+  resetState,
+  deleteScorecard,
+  updateScorecard,
+  currState,
+} = new GameState();
+
+const resetApp = new Timer(resetState);
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,12 +44,20 @@ export default async function handler(
               const io = new Server(res.socket.server);
               res.socket.server.io = io;
 
+              // when socket establishes a connection
               io.on("connection", (socket) => {
                 console.log(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
 
-                // when user joins will emit this
+                resetApp.clearTimer();
+
+                // if game in progress
+                if (currState().gameState.length > 0) {
+                  io.emit("scorecard", currState().gameState);
+                }
+
+                // when user first joins will emit this
                 io.emit("messageFromServer", {
                   id: uuid(),
                   username: JabbaBot.name,
@@ -47,6 +69,13 @@ export default async function handler(
                   _createdAt: Date.now(), // unix date here
                 });
 
+                socket.on("resetApp", () => {
+                  console.log("resetting...");
+                  resetState();
+                  io.emit("scorecard", currState().gameState);
+                });
+
+                // messaging system
                 socket.on(
                   "messageFromClient",
                   (message: WingspanChatMessage) => {
@@ -64,14 +93,54 @@ export default async function handler(
                   }
                 );
 
+                // typing status
                 socket.on("isTyping", (status: boolean) => {
                   socket.broadcast.emit("isTyping", status);
                 });
 
-                socket.on("disconnect", () => {
+                // scorecard share state
+                socket.on("scorecard", (scorecardObj: PlayerColumnObj) => {
+                  if (scorecardObj.socketId in currState().gameStateHash) {
+                    io.emit("messageFromServer", {
+                      id: uuid(),
+                      username: JabbaBot.name,
+                      message:
+                        typeof JabbaBot.prefixPillow === "function" &&
+                        JabbaBot.prefixPillow("Game state exists"),
+                    });
+                    return;
+                  }
+                  if (currState().gameState.length < 5) {
+                    addScorecard(scorecardObj);
+                    io.emit("scorecard", currState().gameState);
+                  }
+                });
+
+                socket.on(
+                  "deleteScorecard",
+                  (params: { socketId: string; index: number }) => {
+                    deleteScorecard(params);
+                    io.emit("scorecard", currState().gameState);
+                  }
+                );
+
+                socket.on("updateScorecard", (scorecard: PlayerColumnObj) => {
+                  updateScorecard(scorecard);
+                  io.emit("scorecard", currState().gameState);
+                });
+
+                // user disconnects
+                socket.on("disconnect", async () => {
+                  const connectedClients = await io.fetchSockets();
+
+                  if (connectedClients.length < 1) {
+                    resetApp.timeoutFn(900);
+                  }
+
                   console.log(
                     `${decodedToken?.decodedToken?.email} has disconnected`
                   );
+
                   io.emit("messageFromServer", {
                     id: uuid(),
                     username: JabbaBot.name,

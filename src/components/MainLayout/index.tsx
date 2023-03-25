@@ -34,6 +34,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         sx={{
           backgroundColor: theme.palette.background.default,
           minHeight: "100vh",
+          paddingBottom: "25vh",
         }}
       >
         {children}
