@@ -1,6 +1,6 @@
 import { ChangeEvent } from "react";
 // mui
-import { Card, Box, Typography } from "@mui/material";
+import { Card, Box, TextField } from "@mui/material";
 // types/utils
 import { ScoreFields } from "src/@types/gameState";
 import ScoreColumn from "./ScoreColumn";
@@ -22,6 +22,7 @@ export default function PlayerScorecard({
 }: PlayerScorecardProps) {
   const scoreColumns = rounds.map((scoreFields, index) => (
     <ScoreColumn
+      index={index}
       key={scoreFields._id}
       scoreFields={scoreFields}
       onChangeScorecard={onChangeScorecard}
@@ -53,7 +54,14 @@ export default function PlayerScorecard({
       }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography>Username: {username}</Typography>
+        <TextField
+          size="small"
+          name="username"
+          label="Username"
+          value={username}
+          onChange={onChangeScorecard}
+          type="text"
+        />
         <PrimaryButton onClick={onClickClear}>Clear</PrimaryButton>
       </Box>
       <Box display="flex" gap="1.25rem">

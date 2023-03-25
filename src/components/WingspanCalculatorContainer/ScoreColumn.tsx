@@ -8,6 +8,7 @@ export interface ScoreColumnProps {
   scoreFields: ScoreFields;
   label: string;
   onChangeScorecard?: (e: ChangeEvent<HTMLInputElement>) => void;
+  index?: number;
   isAllFieldsDisabled?: boolean;
   isTotal?: boolean;
   total?: number;
@@ -15,6 +16,7 @@ export interface ScoreColumnProps {
 
 export default function ScoreColumn({
   scoreFields,
+  index,
   onChangeScorecard,
   isAllFieldsDisabled,
   label,
@@ -37,6 +39,7 @@ export default function ScoreColumn({
       <Typography>{label}</Typography>
       <Box display="flex" flexDirection="column" gap="1.25rem">
         <TextField
+          id={index?.toString()}
           name="birds"
           label="Birds"
           value={birds}
@@ -48,6 +51,7 @@ export default function ScoreColumn({
           disabled={isAllFieldsDisabled}
         />
         <TextField
+          id={index?.toString()}
           name="bonusCards"
           label="Bonus Cards"
           value={bonusCards}
@@ -59,6 +63,7 @@ export default function ScoreColumn({
           disabled={isAllFieldsDisabled}
         />
         <TextField
+          id={index?.toString()}
           name="endOfRoundGoals"
           label="End of Round Goals"
           value={endOfRoundGoals}
@@ -70,6 +75,7 @@ export default function ScoreColumn({
           disabled={isAllFieldsDisabled}
         />
         <TextField
+          id={index?.toString()}
           name="eggs"
           label="Eggs"
           value={eggs}
@@ -81,6 +87,7 @@ export default function ScoreColumn({
           disabled={isAllFieldsDisabled}
         />
         <TextField
+          id={index?.toString()}
           name="foodOnCards"
           label="Food on Cards"
           value={foodOnCards}
@@ -92,6 +99,7 @@ export default function ScoreColumn({
           disabled={isAllFieldsDisabled}
         />
         <TextField
+          id={index?.toString()}
           name="tuckedCards"
           label="Tucked Cards"
           value={tuckedCards}
@@ -118,4 +126,5 @@ ScoreColumn.defaultProps = {
   isTotal: false,
   total: undefined,
   onChangeScorecard: undefined,
+  index: undefined,
 };

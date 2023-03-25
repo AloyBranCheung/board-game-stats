@@ -14,7 +14,7 @@ import useSocketIo from "src/hooks/useSocketIo";
 import { WingspanChatMessage } from "src/@types/chat";
 import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
-import { AppGameState } from "src/@types/gameState";
+import { AppGameState, GameRounds, ScoreFields } from "src/@types/gameState";
 
 export default function WingspanCalculatorContainer() {
   const [sendTimeout, setSendTimeout] = useState<NodeJS.Timeout>();
@@ -69,7 +69,12 @@ export default function WingspanCalculatorContainer() {
 
   // TODO: update card
   const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
+    const { id, value, name } = e.target;
+    const currSocketScorecard = appGameState[socketId];
+    const roundToChange = currSocketScorecard.rounds[Number(id)];
+    roundToChange[name as keyof ScoreFields] = value;
+
+    socket?.emit("updateScorecard", currSocketScorecard);
   };
 
   // TODO: clear card
