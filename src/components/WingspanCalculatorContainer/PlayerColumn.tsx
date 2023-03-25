@@ -3,21 +3,38 @@ import React, { ChangeEvent } from "react";
 import { Card, Box, Typography, TextField } from "@mui/material";
 // types/utils
 import { PlayerColumnObj } from "src/@types/playerColumns";
+import PrimaryButton from "../UI/PrimaryButton";
 
 export interface PlayerColumnProps {
   indexInArray: number;
   playerColumnObj: PlayerColumnObj;
   onChangeScorecard: (e: ChangeEvent<HTMLInputElement>) => void;
+  onDeleteColumn: () => void;
 }
 
 export default function PlayerColumn({
   indexInArray,
   playerColumnObj,
   onChangeScorecard,
+  onDeleteColumn,
 }: PlayerColumnProps) {
-  const { username, birds } = playerColumnObj;
+  const {
+    username,
+    birds,
+    bonusCards,
+    endOfRoundGoals,
+    eggs,
+    foodOnCards,
+    tuckedCards,
+  } = playerColumnObj;
 
-  // TODO: Reset Column
+  const totalPoints =
+    +birds +
+    +bonusCards +
+    +endOfRoundGoals +
+    +eggs +
+    +foodOnCards +
+    +tuckedCards;
 
   return (
     <Card
@@ -44,14 +61,71 @@ export default function PlayerColumn({
           label="Birds"
           value={birds}
           onChange={onChangeScorecard}
+          type="number"
+          inputProps={{
+            min: 0,
+          }}
         />
         <TextField
           id={indexInArray.toString()}
-          name="username"
-          label="Username"
-          value={username}
+          name="bonusCards"
+          label="Bonus Cards"
+          value={bonusCards}
           onChange={onChangeScorecard}
+          type="number"
+          inputProps={{
+            min: 0,
+          }}
         />
+        <TextField
+          id={indexInArray.toString()}
+          name="endOfRoundGoals"
+          label="End of Round Goals"
+          value={endOfRoundGoals}
+          onChange={onChangeScorecard}
+          type="number"
+          inputProps={{
+            min: 0,
+          }}
+        />
+        <TextField
+          id={indexInArray.toString()}
+          name="eggs"
+          label="Eggs"
+          value={eggs}
+          onChange={onChangeScorecard}
+          type="number"
+          inputProps={{
+            min: 0,
+          }}
+        />
+        <TextField
+          id={indexInArray.toString()}
+          name="foodOnCards"
+          label="Food on Cards"
+          value={foodOnCards}
+          onChange={onChangeScorecard}
+          type="number"
+          inputProps={{
+            min: 0,
+          }}
+        />
+        <TextField
+          id={indexInArray.toString()}
+          name="tuckedCards"
+          label="Tucked Cards"
+          value={tuckedCards}
+          onChange={onChangeScorecard}
+          type="number"
+          inputProps={{
+            min: 0,
+          }}
+        />
+        <Typography>
+          <b>Total: </b>
+          {totalPoints}
+        </Typography>
+        <PrimaryButton onClick={onDeleteColumn}>Delete</PrimaryButton>
       </Box>
     </Card>
   );

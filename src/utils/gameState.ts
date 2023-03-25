@@ -18,10 +18,16 @@ class GameState {
     }
   };
 
-  public deleteScorecard = (socketId: string) => {
-    this.gameState = this.gameState.filter(
-      (columnObj) => columnObj.socketId !== socketId
-    );
+  public deleteScorecard = ({
+    socketId,
+    index,
+  }: {
+    socketId: string;
+    index: number;
+  }) => {
+    const preItem = this.gameState.slice(0, index);
+    const postItem = this.gameState.slice(index + 1);
+    this.gameState = preItem.concat(postItem);
     delete this.gameStateHash[socketId];
   };
 

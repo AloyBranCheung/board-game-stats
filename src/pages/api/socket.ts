@@ -116,10 +116,13 @@ export default async function handler(
                   }
                 });
 
-                socket.on("deleteScorecard", (socketId: string) => {
-                  deleteScorecard(socketId);
-                  io.emit("scorecard", currState().gameState);
-                });
+                socket.on(
+                  "deleteScorecard",
+                  (params: { socketId: string; index: number }) => {
+                    deleteScorecard(params);
+                    io.emit("scorecard", currState().gameState);
+                  }
+                );
 
                 socket.on("updateScorecard", (scorecard: PlayerColumnObj) => {
                   updateScorecard(scorecard);

@@ -68,15 +68,20 @@ export default function WingspanCalculatorContainer() {
 
   const allPlayerColumns = useMemo(
     () =>
-      playerColumns.map((playerColumnObj, index) => (
-        <Grid2 key={playerColumnObj.socketId} xs={12} md={6} lg={4} xl={3}>
-          <PlayerColumn
-            onChangeScorecard={handleChangeScorecard}
-            indexInArray={index}
-            playerColumnObj={playerColumnObj}
-          />
-        </Grid2>
-      )),
+      playerColumns.map((playerColumnObj, index) => {
+        const handleDeleteColumn = () =>
+          socket?.emit("deleteScorecard", { socketId, index });
+        return (
+          <Grid2 key={playerColumnObj.socketId} xs={12} md={6} lg={4} xl={3}>
+            <PlayerColumn
+              onChangeScorecard={handleChangeScorecard}
+              indexInArray={index}
+              playerColumnObj={playerColumnObj}
+              onDeleteColumn={handleDeleteColumn}
+            />
+          </Grid2>
+        );
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [playerColumns]
   );
