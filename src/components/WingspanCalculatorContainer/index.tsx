@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState, useMemo } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 // components
 import PrimaryButton from "../UI/PrimaryButton";
 import Scorecard from "src/utils/scorecardObj";
@@ -6,7 +6,7 @@ import PlayerScorecard from "src/components/WingspanCalculatorContainer/PlayerSc
 // import PlayerRow from "./PlayerRow";
 import WingspanChat from "./WingspanChat";
 // mui
-import { Container, Box, Paper } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 // hooks
 import useSocketIo from "src/hooks/useSocketIo";
@@ -65,11 +65,15 @@ export default function WingspanCalculatorContainer() {
     socket?.emit("addScorecard", new Scorecard(socketId, username));
   };
 
+  const handleGameReset = () => socket?.emit("resetApp");
+
+  // TODO: update card
   const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
     console.log(e);
   };
 
-  const handleGameReset = () => socket?.emit("resetApp");
+  // TODO: clear card
+  const handleClearCard = () => console.log("clicked clear");
 
   const allScorecards = Object.keys(appGameState).map((socketId: string) => {
     const singleScorecard = appGameState[socketId];
@@ -81,6 +85,7 @@ export default function WingspanCalculatorContainer() {
         username={singleScorecard.username}
         rounds={scorecardColumns}
         onChangeScorecard={handleChangeScorecard}
+        onClickClear={handleClearCard}
       />
     );
   });
@@ -142,7 +147,9 @@ export default function WingspanCalculatorContainer() {
           </PrimaryButton>
         )}
         <Grid2 container spacing="1.25rem">
-          {allScorecards}
+          <Box display="flex" flexDirection="column" gap="1.25rem">
+            {allScorecards}
+          </Box>
         </Grid2>
       </Box>
     </Container>

@@ -5,17 +5,20 @@ import { Card, Box, Typography } from "@mui/material";
 import { ScoreFields } from "src/@types/gameState";
 import ScoreColumn from "./ScoreColumn";
 import { playerColumnState } from "src/utils/scorecardObj";
+import PrimaryButton from "../UI/PrimaryButton";
 
 interface PlayerScorecardProps {
   username: string;
   rounds: ScoreFields[];
   onChangeScorecard: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClickClear: () => void;
 }
 
 export default function PlayerScorecard({
   rounds,
   username,
   onChangeScorecard,
+  onClickClear,
 }: PlayerScorecardProps) {
   const scoreColumns = rounds.map((scoreFields, index) => (
     <ScoreColumn
@@ -49,7 +52,10 @@ export default function PlayerScorecard({
         gap: "1.25rem",
       }}
     >
-      <Typography>Username: {username}</Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography>Username: {username}</Typography>
+        <PrimaryButton onClick={onClickClear}>Clear</PrimaryButton>
+      </Box>
       <Box display="flex" gap="1.25rem">
         {scoreColumns}
         <ScoreColumn
