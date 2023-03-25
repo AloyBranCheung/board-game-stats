@@ -69,6 +69,12 @@ export default async function handler(
                   _createdAt: Date.now(), // unix date here
                 });
 
+                socket.on("resetApp", () => {
+                  console.log("resetting...");
+                  resetState();
+                  io.emit("scorecard", currState().gameState);
+                });
+
                 // messaging system
                 socket.on(
                   "messageFromClient",

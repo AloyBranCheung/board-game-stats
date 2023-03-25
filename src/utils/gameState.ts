@@ -31,7 +31,6 @@ class GameState {
     );
 
     this.gameState[index] = scorecard;
-    console.log(this.gameState);
     this.gameStateHash[scorecard.socketId] = scorecard;
   };
 

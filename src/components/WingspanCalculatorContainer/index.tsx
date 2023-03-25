@@ -4,6 +4,7 @@ import React, { ChangeEvent, useEffect, useState, useMemo } from "react";
 import WingspanChat from "./WingspanChat";
 // mui
 import { Container, Box } from "@mui/material";
+import Grid2 from "@mui/material/Unstable_Grid2";
 // hooks
 import useSocketIo from "src/hooks/useSocketIo";
 // utils/types
@@ -68,12 +69,13 @@ export default function WingspanCalculatorContainer() {
   const allPlayerColumns = useMemo(
     () =>
       playerColumns.map((playerColumnObj, index) => (
-        <PlayerColumn
-          onChangeScorecard={handleChangeScorecard}
-          key={playerColumnObj.socketId}
-          indexInArray={index}
-          playerColumnObj={playerColumnObj}
-        />
+        <Grid2 key={playerColumnObj.socketId} xs={12} md={6} lg={4} xl={3}>
+          <PlayerColumn
+            onChangeScorecard={handleChangeScorecard}
+            indexInArray={index}
+            playerColumnObj={playerColumnObj}
+          />
+        </Grid2>
       )),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [playerColumns]
@@ -84,6 +86,9 @@ export default function WingspanCalculatorContainer() {
   };
 
   // TODO: reset game popup modal are you sure?
+  const handleGameReset = () => {
+    socket?.emit("resetApp");
+  };
 
   /* -------------------------------------------------------------------------- */
   // useEffect to attach socket listeners
@@ -138,9 +143,14 @@ export default function WingspanCalculatorContainer() {
             Add Scorecard
           </PrimaryButton>
         )}
-        <Box display="flex" gap="1.25rem">
+        {playerColumns.length > 0 && (
+          <PrimaryButton sx={{ width: "100%" }} onClick={handleGameReset}>
+            Reset Game?
+          </PrimaryButton>
+        )}
+        <Grid2 container spacing="1.25rem">
           {allPlayerColumns}
-        </Box>
+        </Grid2>
       </Box>
     </Container>
   );

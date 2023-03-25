@@ -15,7 +15,7 @@ export default function PlayerColumn({
   playerColumnObj,
   onChangeScorecard,
 }: PlayerColumnProps) {
-  const { username } = playerColumnObj;
+  const { username, birds } = playerColumnObj;
 
   // TODO: Reset Column
 
@@ -29,7 +29,22 @@ export default function PlayerColumn({
       }}
     >
       <Typography>{username}</Typography>
-      <Box>
+      <Box display="flex" flexDirection="column" gap="1.25rem">
+        <TextField
+          id={indexInArray.toString()}
+          name="username"
+          label="Username"
+          value={username}
+          onChange={onChangeScorecard}
+          type="text"
+        />
+        <TextField
+          id={indexInArray.toString()}
+          name="birds"
+          label="Birds"
+          value={birds}
+          onChange={onChangeScorecard}
+        />
         <TextField
           id={indexInArray.toString()}
           name="username"
