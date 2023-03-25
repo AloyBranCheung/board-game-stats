@@ -1,9 +1,12 @@
 import React, { ChangeEvent, useEffect, useState, useMemo } from "react";
 // components
+import PrimaryButton from "../UI/PrimaryButton";
+import Scorecard from "src/utils/scorecardObj";
+import PlayerScorecard from "src/components/WingspanCalculatorContainer/PlayerScorecard";
 // import PlayerRow from "./PlayerRow";
 import WingspanChat from "./WingspanChat";
 // mui
-import { Container, Box } from "@mui/material";
+import { Container, Box, Paper } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 // hooks
 import useSocketIo from "src/hooks/useSocketIo";
@@ -11,10 +14,7 @@ import useSocketIo from "src/hooks/useSocketIo";
 import { WingspanChatMessage } from "src/@types/chat";
 import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
-import { PlayerColumnObj } from "src/@types/playerColumns";
-import PlayerColumn from "./PlayerColumn";
-import playerColumnState from "src/utils/scorecardObj";
-import PrimaryButton from "../UI/PrimaryButton";
+import { AppGameState } from "src/@types/gameState";
 
 export default function WingspanCalculatorContainer() {
   const [sendTimeout, setSendTimeout] = useState<NodeJS.Timeout>();
@@ -22,11 +22,13 @@ export default function WingspanCalculatorContainer() {
   const [username, setUsername] = useState(
     generateUsername({ useRandomNumber: false })
   );
+  // messaging
   const [isTyping, setIsTyping] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [messages, setMessages] = useState<WingspanChatMessage[]>([]);
-  const [playerColumns, setPlayerColumns] = useState<PlayerColumnObj[]>([]);
-  //
+  // calculator
+  const [appGameState, setAppGameState] = useState<AppGameState>({});
+  // socket hook
   const { socket, socketId } = useSocketIo();
 
   const handleChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,44 +58,32 @@ export default function WingspanCalculatorContainer() {
     }
   };
 
-  /* ----------------------------- player columns ----------------------------- */
+  /* ----------------------------- app game state ----------------------------- */
+  const currScorecardIds = Object.keys(appGameState);
+
+  const handleClickAddScorecard = () => {
+    socket?.emit("addScorecard", new Scorecard(socketId, username));
+  };
+
   const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
-    const { id, name, value } = e.target;
-
-    socket?.emit("updateScorecard", {
-      ...playerColumns[Number(id)],
-      [name]: value,
-    });
+    console.log(e);
   };
 
-  const allPlayerColumns = useMemo(
-    () =>
-      playerColumns.map((playerColumnObj, index) => {
-        const handleDeleteColumn = () =>
-          socket?.emit("deleteScorecard", { socketId, index });
-        return (
-          <Grid2 key={playerColumnObj.socketId} xs={12} md={6} lg={4} xl={3}>
-            <PlayerColumn
-              onChangeScorecard={handleChangeScorecard}
-              indexInArray={index}
-              playerColumnObj={playerColumnObj}
-              onDeleteColumn={handleDeleteColumn}
-            />
-          </Grid2>
-        );
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [playerColumns]
-  );
+  const handleGameReset = () => socket?.emit("resetApp");
 
-  const handleClickAddColumn = () => {
-    socket?.emit("scorecard", playerColumnState(username, socketId));
-  };
+  const allScorecards = Object.keys(appGameState).map((socketId: string) => {
+    const singleScorecard = appGameState[socketId];
+    const scorecardColumns = Object.values(singleScorecard.rounds);
 
-  // TODO: reset game popup modal are you sure?
-  const handleGameReset = () => {
-    socket?.emit("resetApp");
-  };
+    return (
+      <PlayerScorecard
+        key={singleScorecard.socketId}
+        username={singleScorecard.username}
+        rounds={scorecardColumns}
+        onChangeScorecard={handleChangeScorecard}
+      />
+    );
+  });
 
   /* -------------------------------------------------------------------------- */
   // useEffect to attach socket listeners
@@ -109,19 +99,14 @@ export default function WingspanCalculatorContainer() {
       setTimeoutId(timeout);
     });
 
-    socket?.on("scorecard", (gameState: PlayerColumnObj[]) => {
-      setPlayerColumns(gameState);
+    socket?.on("scorecard", (appGameState: AppGameState) => {
+      setAppGameState(appGameState);
     });
 
     return () => {
       socket?.off();
     };
-  }, [playerColumns, playerColumns, socket, timeoutId]);
-
-  // useEffect(() => {
-  //   socket?.emit("gameSync", { playerColumns, playerColumnsHash });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [socket]);
+  }, [socket, timeoutId]);
 
   return (
     <Container
@@ -143,18 +128,21 @@ export default function WingspanCalculatorContainer() {
         messages={messages}
       />
       <Box display="flex" flexDirection="column" gap="1.25rem">
-        {playerColumns.length < 5 && (
-          <PrimaryButton sx={{ width: "100%" }} onClick={handleClickAddColumn}>
+        {currScorecardIds.length < 5 && (
+          <PrimaryButton
+            sx={{ width: "100%" }}
+            onClick={handleClickAddScorecard}
+          >
             Add Scorecard
           </PrimaryButton>
         )}
-        {playerColumns.length > 0 && (
+        {currScorecardIds.length > 0 && (
           <PrimaryButton sx={{ width: "100%" }} onClick={handleGameReset}>
             Reset Game?
           </PrimaryButton>
         )}
         <Grid2 container spacing="1.25rem">
-          {allPlayerColumns}
+          {allScorecards}
         </Grid2>
       </Box>
     </Container>

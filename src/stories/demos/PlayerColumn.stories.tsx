@@ -2,7 +2,7 @@ import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import PlayerColumn, {
   PlayerColumnProps,
-} from "src/components/WingspanCalculatorContainer/PlayerColumn";
+} from "src/components/WingspanCalculatorContainer/ScoreColumn";
 
 export default {
   /* 👇 The title prop is optional.
