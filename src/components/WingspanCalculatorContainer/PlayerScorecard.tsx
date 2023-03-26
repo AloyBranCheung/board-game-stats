@@ -8,6 +8,7 @@ import { playerColumnState } from "src/utils/scorecardObj";
 import PrimaryButton from "../UI/PrimaryButton";
 
 interface PlayerScorecardProps {
+  socketId: string;
   username: string;
   rounds: ScoreFields[];
   onChangeScorecard: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -16,6 +17,7 @@ interface PlayerScorecardProps {
 }
 
 export default function PlayerScorecard({
+  socketId,
   rounds,
   username,
   onChangeScorecard,
@@ -58,6 +60,7 @@ export default function PlayerScorecard({
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <TextField
           size="small"
+          id={socketId}
           name="username"
           label="Username"
           value={username}

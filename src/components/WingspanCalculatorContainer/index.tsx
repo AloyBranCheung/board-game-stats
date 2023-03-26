@@ -86,8 +86,8 @@ export default function WingspanCalculatorContainer() {
 
     return (
       <PlayerScorecard
+        socketId={socketId}
         key={singleScorecard.socketId}
-        socketId={singleScorecard.socketId}
         username={singleScorecard.username}
         rounds={scorecardColumns}
         onChangeScorecard={handleChangeScorecard}
