@@ -20,6 +20,7 @@ const {
   resetState,
   deleteScorecard,
   updateScorecard,
+  clearCard,
   currState,
 } = new GameState();
 
@@ -128,10 +129,26 @@ export default async function handler(
 
                 // update for everyone
                 socket.on("updateScorecard", (scorecard: SingleScorecard) => {
+                  console.log(scorecard);
+
                   updateScorecard(scorecard);
                   io.emit("scorecard", currState());
                 });
 
+                // clear scorecard but maintains game state
+                socket.on(
+                  "clearCard",
+                  ({
+                    socketId,
+                    username,
+                  }: {
+                    socketId: string;
+                    username: string;
+                  }) => {
+                    clearCard({ socketId, username });
+                    io.emit("scorecard", currState());
+                  }
+                );
                 // user disconnects
                 socket.on("disconnect", async () => {
                   const connectedClients = await io.fetchSockets();

@@ -14,7 +14,7 @@ import useSocketIo from "src/hooks/useSocketIo";
 import { WingspanChatMessage } from "src/@types/chat";
 import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
-import { AppGameState, GameRounds, ScoreFields } from "src/@types/gameState";
+import { AppGameState, ScoreFields } from "src/@types/gameState";
 
 export default function WingspanCalculatorContainer() {
   const [sendTimeout, setSendTimeout] = useState<NodeJS.Timeout>();
@@ -67,18 +67,18 @@ export default function WingspanCalculatorContainer() {
 
   const handleGameReset = () => socket?.emit("resetApp");
 
-  // TODO: update card
   const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value, name } = e.target;
+    // TODO: to edit other people's scorecard will need to get that player's
+    // TODO: socketId, currently it only edits the current user's scorecard
     const currSocketScorecard = appGameState[socketId];
-    const roundToChange = currSocketScorecard.rounds[Number(id)];
-    roundToChange[name as keyof ScoreFields] = value;
-
+    const roundToChange = currSocketScorecard.rounds[Number(id)] as ScoreFields;
+    roundToChange[name as keyof Omit<ScoreFields, "_id">] = Number(value);
     socket?.emit("updateScorecard", currSocketScorecard);
   };
 
-  // TODO: clear card
-  const handleClearCard = () => console.log("clicked clear");
+  const handleClearCard = (socketId: string) =>
+    socket?.emit("clearCard", { socketId, username });
 
   const allScorecards = Object.keys(appGameState).map((socketId: string) => {
     const singleScorecard = appGameState[socketId];
@@ -87,6 +87,7 @@ export default function WingspanCalculatorContainer() {
     return (
       <PlayerScorecard
         key={singleScorecard.socketId}
+        socketId={singleScorecard.socketId}
         username={singleScorecard.username}
         rounds={scorecardColumns}
         onChangeScorecard={handleChangeScorecard}
