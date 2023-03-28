@@ -13,7 +13,6 @@ interface PlayerScorecardProps {
   rounds: ScoreFields[];
   onChangeScorecard: (e: ChangeEvent<HTMLInputElement>) => void;
   onClickClear: (socketId: string) => void;
-  socketId: string;
 }
 
 export default function PlayerScorecard({
@@ -22,7 +21,6 @@ export default function PlayerScorecard({
   username,
   onChangeScorecard,
   onClickClear,
-  socketId,
 }: PlayerScorecardProps) {
   const scoreColumns = rounds.map((scoreFields, index) => (
     <ScoreColumn
