@@ -22,7 +22,13 @@ export default function PrimaryButton({
   sx,
 }: PrimaryButtonProps) {
   return (
-    <StyledButton sx={sx} onClick={onClick} variant="contained" color="primary">
+    <StyledButton
+      size="small"
+      sx={sx}
+      onClick={onClick}
+      variant="contained"
+      color="primary"
+    >
       {children}
     </StyledButton>
   );

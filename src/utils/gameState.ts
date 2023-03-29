@@ -1,54 +1,47 @@
 /* eslint-disable no-console */
-import { PlayerColumnObj } from "src/@types/playerColumns";
+import { AppGameState, SingleScorecard } from "src/@types/gameState";
+import Scorecard from "./scorecardObj";
 
 class GameState {
-  private gameState: PlayerColumnObj[];
-  private gameStateHash: { [socketId: string]: PlayerColumnObj };
+  private appGameState: AppGameState;
 
   constructor() {
-    this.gameState = [];
-    this.gameStateHash = {};
+    this.appGameState = {};
   }
 
-  public addScorecard = (scorecard: PlayerColumnObj) => {
-    if (scorecard.socketId in this.gameStateHash) return;
-    if (this.gameState.length < 5) {
-      this.gameState.push(scorecard);
-      this.gameStateHash[scorecard.socketId] = scorecard;
+  public addScorecard = (scorecard: SingleScorecard) => {
+    if (scorecard.socketId in this.appGameState) return;
+    if (Object.keys(this.appGameState).length < 5) {
+      this.appGameState[scorecard.socketId] = scorecard;
     }
   };
 
-  public deleteScorecard = ({
-    socketId,
-    index,
-  }: {
-    socketId: string;
-    index: number;
-  }) => {
-    const preItem = this.gameState.slice(0, index);
-    const postItem = this.gameState.slice(index + 1);
-    this.gameState = preItem.concat(postItem);
-    delete this.gameStateHash[socketId];
+  public deleteScorecard = (socketId: string) => {
+    if (socketId in this.appGameState) delete this.appGameState[socketId];
   };
 
-  public updateScorecard = (scorecard: PlayerColumnObj) => {
-    const index = this.gameState.findIndex(
-      (obj) => obj.socketId === scorecard.socketId
-    );
+  public updateScorecard = (scorecard: SingleScorecard) => {
+    this.appGameState[scorecard.socketId] = scorecard;
+  };
 
-    this.gameState[index] = scorecard;
-    this.gameStateHash[scorecard.socketId] = scorecard;
+  public clearCard = ({
+    socketId,
+    username,
+  }: {
+    socketId: string;
+    username: string;
+  }) => {
+    if (socketId in this.appGameState) {
+      this.appGameState[socketId] = new Scorecard(socketId, username);
+    }
   };
 
   public resetState = () => {
-    this.gameState = [];
-    this.gameStateHash = {};
+    this.appGameState = {};
   };
 
   public currState = () => {
-    const gameState = this.gameState;
-    const gameStateHash = this.gameStateHash;
-    return { gameState, gameStateHash };
+    return this.appGameState;
   };
 }
 

@@ -1,40 +1,30 @@
 import React, { ChangeEvent } from "react";
 // mui
-import { Card, Box, Typography, TextField } from "@mui/material";
+import { Typography, Card, Box, TextField } from "@mui/material";
 // types/utils
-import { PlayerColumnObj } from "src/@types/playerColumns";
-import PrimaryButton from "../UI/PrimaryButton";
+import { ScoreFields } from "src/@types/gameState";
 
-export interface PlayerColumnProps {
-  indexInArray: number;
-  playerColumnObj: PlayerColumnObj;
-  onChangeScorecard: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDeleteColumn: () => void;
+export interface ScoreColumnProps {
+  scoreFields: ScoreFields;
+  label: string;
+  onChangeScorecard?: (e: ChangeEvent<HTMLInputElement>) => void;
+  index?: number;
+  isAllFieldsDisabled?: boolean;
+  isTotal?: boolean;
+  total?: number;
 }
 
-export default function PlayerColumn({
-  indexInArray,
-  playerColumnObj,
+export default function ScoreColumn({
+  scoreFields,
+  index,
   onChangeScorecard,
-  onDeleteColumn,
-}: PlayerColumnProps) {
-  const {
-    username,
-    birds,
-    bonusCards,
-    endOfRoundGoals,
-    eggs,
-    foodOnCards,
-    tuckedCards,
-  } = playerColumnObj;
-
-  const totalPoints =
-    +birds +
-    +bonusCards +
-    +endOfRoundGoals +
-    +eggs +
-    +foodOnCards +
-    +tuckedCards;
+  isAllFieldsDisabled,
+  label,
+  isTotal,
+  total,
+}: ScoreColumnProps) {
+  const { birds, bonusCards, endOfRoundGoals, eggs, foodOnCards, tuckedCards } =
+    scoreFields;
 
   return (
     <Card
@@ -43,20 +33,13 @@ export default function PlayerColumn({
         display: "flex",
         flexDirection: "column",
         gap: "1.25rem",
+        width: "100%",
       }}
     >
-      <Typography>{username}</Typography>
+      <Typography>{label}</Typography>
       <Box display="flex" flexDirection="column" gap="1.25rem">
         <TextField
-          id={indexInArray.toString()}
-          name="username"
-          label="Username"
-          value={username}
-          onChange={onChangeScorecard}
-          type="text"
-        />
-        <TextField
-          id={indexInArray.toString()}
+          id={index?.toString()}
           name="birds"
           label="Birds"
           value={birds}
@@ -65,9 +48,10 @@ export default function PlayerColumn({
           inputProps={{
             min: 0,
           }}
+          disabled={isAllFieldsDisabled}
         />
         <TextField
-          id={indexInArray.toString()}
+          id={index?.toString()}
           name="bonusCards"
           label="Bonus Cards"
           value={bonusCards}
@@ -76,9 +60,10 @@ export default function PlayerColumn({
           inputProps={{
             min: 0,
           }}
+          disabled={isAllFieldsDisabled}
         />
         <TextField
-          id={indexInArray.toString()}
+          id={index?.toString()}
           name="endOfRoundGoals"
           label="End of Round Goals"
           value={endOfRoundGoals}
@@ -87,9 +72,10 @@ export default function PlayerColumn({
           inputProps={{
             min: 0,
           }}
+          disabled={isAllFieldsDisabled}
         />
         <TextField
-          id={indexInArray.toString()}
+          id={index?.toString()}
           name="eggs"
           label="Eggs"
           value={eggs}
@@ -98,9 +84,10 @@ export default function PlayerColumn({
           inputProps={{
             min: 0,
           }}
+          disabled={isAllFieldsDisabled}
         />
         <TextField
-          id={indexInArray.toString()}
+          id={index?.toString()}
           name="foodOnCards"
           label="Food on Cards"
           value={foodOnCards}
@@ -109,9 +96,10 @@ export default function PlayerColumn({
           inputProps={{
             min: 0,
           }}
+          disabled={isAllFieldsDisabled}
         />
         <TextField
-          id={indexInArray.toString()}
+          id={index?.toString()}
           name="tuckedCards"
           label="Tucked Cards"
           value={tuckedCards}
@@ -120,13 +108,23 @@ export default function PlayerColumn({
           inputProps={{
             min: 0,
           }}
+          disabled={isAllFieldsDisabled}
         />
-        <Typography>
-          <b>Total: </b>
-          {totalPoints}
-        </Typography>
-        <PrimaryButton onClick={onDeleteColumn}>Delete</PrimaryButton>
+        {isTotal && (
+          <Typography>
+            <b>Grand Total: </b>
+            {total}
+          </Typography>
+        )}
       </Box>
     </Card>
   );
 }
+
+ScoreColumn.defaultProps = {
+  isAllFieldsDisabled: false,
+  isTotal: false,
+  total: undefined,
+  onChangeScorecard: undefined,
+  index: undefined,
+};
