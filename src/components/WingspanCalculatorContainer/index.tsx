@@ -68,9 +68,6 @@ export default function WingspanCalculatorContainer() {
 
   const handleGameReset = () => socket?.emit("resetApp");
 
-  const handleClearCard = (socketId: string) =>
-    socket?.emit("clearCard", { socketId, username });
-
   const allScorecards = Object.keys(appGameState).map((socketId: string) => {
     const singleScorecard = appGameState[socketId];
     const scorecardColumns = Object.values(singleScorecard.rounds);
@@ -82,7 +79,6 @@ export default function WingspanCalculatorContainer() {
         singleScorecard={singleScorecard}
         username={singleScorecard.username}
         rounds={scorecardColumns}
-        onClickClear={handleClearCard}
       />
     );
   });

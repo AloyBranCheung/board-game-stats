@@ -23,14 +23,12 @@ interface PlayerScorecardProps {
   username: string;
   rounds: ScoreFields[];
   singleScorecard: SingleScorecard;
-  onClickClear: (socketId: string) => void;
 }
 
 export default function PlayerScorecard({
   socketId,
   rounds,
   username,
-  onClickClear,
   singleScorecard,
 }: PlayerScorecardProps) {
   const { socket } = useSocketIo();
@@ -39,6 +37,9 @@ export default function PlayerScorecard({
   const [roundSelected, setRoundSelected] = useState("0");
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
+
+  const handleClearCard = () =>
+    socket?.emit("clearCard", { socketId, username });
 
   const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value, name } = e.target;
@@ -104,9 +105,7 @@ export default function PlayerScorecard({
           onChange={handleChangeScorecard}
           type="text"
         />
-        <PrimaryButton onClick={() => onClickClear(socketId)}>
-          Clear
-        </PrimaryButton>
+        <PrimaryButton onClick={handleClearCard}>Clear</PrimaryButton>
       </Box>
       <Box display="flex" gap="1.25rem">
         {isLargeScreen ? (
