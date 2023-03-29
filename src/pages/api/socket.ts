@@ -129,8 +129,6 @@ export default async function handler(
 
                 // update for everyone
                 socket.on("updateScorecard", (scorecard: SingleScorecard) => {
-                  console.log(scorecard);
-
                   updateScorecard(scorecard);
                   io.emit("scorecard", currState());
                 });
