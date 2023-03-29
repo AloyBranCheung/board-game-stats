@@ -1,6 +1,13 @@
 import React, { ChangeEvent } from "react";
 // mui
-import { Typography, Card, Box, TextField } from "@mui/material";
+import {
+  Typography,
+  Card,
+  Box,
+  TextField,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 // types/utils
 import { ScoreFields } from "src/@types/gameState";
 
@@ -12,6 +19,7 @@ export interface ScoreColumnProps {
   isAllFieldsDisabled?: boolean;
   isTotal?: boolean;
   total?: number;
+  columnTotal?: number;
 }
 
 export default function ScoreColumn({
@@ -22,7 +30,10 @@ export default function ScoreColumn({
   label,
   isTotal,
   total,
+  columnTotal,
 }: ScoreColumnProps) {
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
   const { birds, bonusCards, endOfRoundGoals, eggs, foodOnCards, tuckedCards } =
     scoreFields;
 
@@ -110,11 +121,28 @@ export default function ScoreColumn({
           }}
           disabled={isAllFieldsDisabled}
         />
-        {isTotal && (
+        {isTotal && isLargeScreen ? (
           <Typography>
             <b>Grand Total: </b>
             {total}
           </Typography>
+        ) : (
+          isTotal && (
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography>
+                <b>Total: </b>
+                {columnTotal}
+              </Typography>
+              <Typography>
+                <b>Grand Total: </b>
+                {total}
+              </Typography>
+            </Box>
+          )
         )}
       </Box>
     </Card>
@@ -125,6 +153,7 @@ ScoreColumn.defaultProps = {
   isAllFieldsDisabled: false,
   isTotal: false,
   total: undefined,
+  columnTotal: undefined,
   onChangeScorecard: undefined,
   index: undefined,
 };

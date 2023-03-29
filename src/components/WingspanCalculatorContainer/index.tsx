@@ -6,7 +6,7 @@ import PlayerScorecard from "src/components/WingspanCalculatorContainer/PlayerSc
 // import PlayerRow from "./PlayerRow";
 import WingspanChat from "./WingspanChat";
 // mui
-import { Container, Box } from "@mui/material";
+import { Container, Box, SelectChangeEvent } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 // hooks
 import useSocketIo from "src/hooks/useSocketIo";
@@ -28,9 +28,12 @@ export default function WingspanCalculatorContainer() {
   const [messages, setMessages] = useState<WingspanChatMessage[]>([]);
   // calculator
   const [appGameState, setAppGameState] = useState<AppGameState>({});
+  // small player scorecard
+  const [roundSelected, setRoundSelected] = useState("0");
   // socket hook
   const { socket, socketId } = useSocketIo();
 
+  /* -------------------------------------------------------------------------- */
   const handleChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setUsername(value);
@@ -58,7 +61,7 @@ export default function WingspanCalculatorContainer() {
     }
   };
 
-  /* ----------------------------- app game state ----------------------------- */
+  /* ----------------------------- app game ----------------------------- */
   const currScorecardIds = Object.keys(appGameState);
 
   const handleClickAddScorecard = () => {
@@ -80,6 +83,12 @@ export default function WingspanCalculatorContainer() {
   const handleClearCard = (socketId: string) =>
     socket?.emit("clearCard", { socketId, username });
 
+  // small player scorecard
+  const handleChangeRound = (e: SelectChangeEvent) => {
+    const { value } = e.target;
+    setRoundSelected(value);
+  };
+
   const allScorecards = Object.keys(appGameState).map((socketId: string) => {
     const singleScorecard = appGameState[socketId];
     const scorecardColumns = Object.values(singleScorecard.rounds);
@@ -92,6 +101,8 @@ export default function WingspanCalculatorContainer() {
         rounds={scorecardColumns}
         onChangeScorecard={handleChangeScorecard}
         onClickClear={handleClearCard}
+        roundSelected={roundSelected}
+        onChangeRound={handleChangeRound}
       />
     );
   });
@@ -153,7 +164,7 @@ export default function WingspanCalculatorContainer() {
           </PrimaryButton>
         )}
         <Grid2 container spacing="1.25rem">
-          <Box display="flex" flexDirection="column" gap="1.25rem">
+          <Box display="flex" flexDirection="column" gap="1.25rem" width="100%">
             {allScorecards}
           </Box>
         </Grid2>

@@ -1,11 +1,19 @@
 import { ChangeEvent } from "react";
 // mui
-import { Card, Box, TextField } from "@mui/material";
+import {
+  Card,
+  Box,
+  TextField,
+  useTheme,
+  useMediaQuery,
+  SelectChangeEvent,
+} from "@mui/material";
 // types/utils
 import { ScoreFields } from "src/@types/gameState";
 import ScoreColumn from "./ScoreColumn";
 import { playerColumnState } from "src/utils/scorecardObj";
 import PrimaryButton from "../UI/PrimaryButton";
+import SmallPlayerScorecard from "./SmallPlayerScorecard";
 
 interface PlayerScorecardProps {
   socketId: string;
@@ -13,6 +21,8 @@ interface PlayerScorecardProps {
   rounds: ScoreFields[];
   onChangeScorecard: (e: ChangeEvent<HTMLInputElement>) => void;
   onClickClear: (socketId: string) => void;
+  roundSelected: string;
+  onChangeRound: (e: SelectChangeEvent) => void;
 }
 
 export default function PlayerScorecard({
@@ -21,7 +31,13 @@ export default function PlayerScorecard({
   username,
   onChangeScorecard,
   onClickClear,
+  roundSelected,
+  onChangeRound,
 }: PlayerScorecardProps) {
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
+
+  // if large screen will map columns
   const scoreColumns = rounds.map((scoreFields, index) => (
     <ScoreColumn
       index={index}
@@ -32,6 +48,7 @@ export default function PlayerScorecard({
     />
   ));
 
+  // scorefields object
   const scorecardTotalEachField = rounds.reduce((prevValue, currValue) => {
     Object.entries(currValue)
       .slice(1)
@@ -41,7 +58,8 @@ export default function PlayerScorecard({
     return prevValue;
   }, playerColumnState());
 
-  const grandTotal = Object.values(scorecardTotalEachField)
+  // number total
+  const grandTotal: number = Object.values(scorecardTotalEachField)
     .slice(1)
     .reduce((a, b) => a + b);
 
@@ -55,7 +73,12 @@ export default function PlayerScorecard({
         gap: "1.25rem",
       }}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        width="100%"
+      >
         <TextField
           size="small"
           id={socketId}
@@ -70,14 +93,26 @@ export default function PlayerScorecard({
         </PrimaryButton>
       </Box>
       <Box display="flex" gap="1.25rem">
-        {scoreColumns}
-        <ScoreColumn
-          scoreFields={scorecardTotalEachField}
-          label="Total"
-          isAllFieldsDisabled
-          isTotal
-          total={grandTotal}
-        />
+        {isLargeScreen ? (
+          <>
+            {scoreColumns}
+            <ScoreColumn
+              scoreFields={scorecardTotalEachField}
+              label="Total"
+              isAllFieldsDisabled
+              isTotal
+              total={grandTotal}
+            />
+          </>
+        ) : (
+          <SmallPlayerScorecard
+            grandTotal={grandTotal}
+            rounds={rounds}
+            roundSelected={roundSelected}
+            onChangeRound={onChangeRound}
+            onChangeScorecard={onChangeScorecard}
+          />
+        )}
       </Box>
     </Card>
   );
