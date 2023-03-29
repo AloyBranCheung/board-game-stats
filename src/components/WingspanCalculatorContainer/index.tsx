@@ -6,7 +6,7 @@ import PlayerScorecard from "src/components/WingspanCalculatorContainer/PlayerSc
 // import PlayerRow from "./PlayerRow";
 import WingspanChat from "./WingspanChat";
 // mui
-import { Container, Box, SelectChangeEvent } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 // hooks
 import useSocketIo from "src/hooks/useSocketIo";
@@ -14,7 +14,7 @@ import useSocketIo from "src/hooks/useSocketIo";
 import { WingspanChatMessage } from "src/@types/chat";
 import { v4 } from "uuid";
 import { generateUsername } from "friendly-username-generator";
-import { AppGameState, ScoreFields } from "src/@types/gameState";
+import { AppGameState } from "src/@types/gameState";
 
 export default function WingspanCalculatorContainer() {
   const [sendTimeout, setSendTimeout] = useState<NodeJS.Timeout>();
@@ -28,8 +28,6 @@ export default function WingspanCalculatorContainer() {
   const [messages, setMessages] = useState<WingspanChatMessage[]>([]);
   // calculator
   const [appGameState, setAppGameState] = useState<AppGameState>({});
-  // small player scorecard
-  const [roundSelected, setRoundSelected] = useState("0");
   // socket hook
   const { socket, socketId } = useSocketIo();
 
@@ -70,25 +68,6 @@ export default function WingspanCalculatorContainer() {
 
   const handleGameReset = () => socket?.emit("resetApp");
 
-  const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
-    const { id, value, name } = e.target;
-    // TODO: to edit other people's scorecard will need to get that player's
-    // TODO: socketId, currently it only edits the current user's scorecard
-    const currSocketScorecard = appGameState[socketId];
-    const roundToChange = currSocketScorecard.rounds[Number(id)] as ScoreFields;
-    roundToChange[name as keyof Omit<ScoreFields, "_id">] = Number(value);
-    socket?.emit("updateScorecard", currSocketScorecard);
-  };
-
-  const handleClearCard = (socketId: string) =>
-    socket?.emit("clearCard", { socketId, username });
-
-  // small player scorecard
-  const handleChangeRound = (e: SelectChangeEvent) => {
-    const { value } = e.target;
-    setRoundSelected(value);
-  };
-
   const allScorecards = Object.keys(appGameState).map((socketId: string) => {
     const singleScorecard = appGameState[socketId];
     const scorecardColumns = Object.values(singleScorecard.rounds);
@@ -97,12 +76,9 @@ export default function WingspanCalculatorContainer() {
       <PlayerScorecard
         socketId={socketId}
         key={singleScorecard.socketId}
+        singleScorecard={singleScorecard}
         username={singleScorecard.username}
         rounds={scorecardColumns}
-        onChangeScorecard={handleChangeScorecard}
-        onClickClear={handleClearCard}
-        roundSelected={roundSelected}
-        onChangeRound={handleChangeRound}
       />
     );
   });

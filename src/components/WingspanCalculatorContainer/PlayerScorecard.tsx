@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 // mui
 import {
   Card,
@@ -8,34 +8,45 @@ import {
   useMediaQuery,
   SelectChangeEvent,
 } from "@mui/material";
-// types/utils
-import { ScoreFields } from "src/@types/gameState";
-import ScoreColumn from "./ScoreColumn";
-import { playerColumnState } from "src/utils/scorecardObj";
+// components
 import PrimaryButton from "../UI/PrimaryButton";
 import SmallPlayerScorecard from "./SmallPlayerScorecard";
+import ScoreColumn from "./ScoreColumn";
+// hooks
+import useSocketIo from "src/hooks/useSocketIo";
+// types/utils
+import { ScoreFields, SingleScorecard } from "src/@types/gameState";
+import { playerColumnState } from "src/utils/scorecardObj";
 
 interface PlayerScorecardProps {
   socketId: string;
   username: string;
   rounds: ScoreFields[];
-  onChangeScorecard: (e: ChangeEvent<HTMLInputElement>) => void;
-  onClickClear: (socketId: string) => void;
-  roundSelected: string;
-  onChangeRound: (e: SelectChangeEvent) => void;
+  singleScorecard: SingleScorecard;
 }
 
 export default function PlayerScorecard({
   socketId,
   rounds,
   username,
-  onChangeScorecard,
-  onClickClear,
-  roundSelected,
-  onChangeRound,
+  singleScorecard,
 }: PlayerScorecardProps) {
+  const { socket } = useSocketIo();
+
+  // small player scorecard
+  const [roundSelected, setRoundSelected] = useState("0");
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
+
+  const handleClearCard = () =>
+    socket?.emit("clearCard", { socketId, username });
+
+  const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value, name } = e.target;
+    const roundToChange = singleScorecard.rounds[Number(id)] as ScoreFields;
+    roundToChange[name as keyof Omit<ScoreFields, "_id">] = Number(value);
+    socket?.emit("updateScorecard", singleScorecard);
+  };
 
   // if large screen will map columns
   const scoreColumns = rounds.map((scoreFields, index) => (
@@ -43,7 +54,7 @@ export default function PlayerScorecard({
       index={index}
       key={scoreFields._id}
       scoreFields={scoreFields}
-      onChangeScorecard={onChangeScorecard}
+      onChangeScorecard={handleChangeScorecard}
       label={`Round ${index + 1}`}
     />
   ));
@@ -62,6 +73,12 @@ export default function PlayerScorecard({
   const grandTotal: number = Object.values(scorecardTotalEachField)
     .slice(1)
     .reduce((a, b) => a + b);
+
+  // small player scorecard
+  const handleChangeRound = (e: SelectChangeEvent) => {
+    const { value } = e.target;
+    setRoundSelected(value);
+  };
 
   return (
     <Card
@@ -85,12 +102,10 @@ export default function PlayerScorecard({
           name="username"
           label="Username"
           value={username}
-          onChange={onChangeScorecard}
+          onChange={handleChangeScorecard}
           type="text"
         />
-        <PrimaryButton onClick={() => onClickClear(socketId)}>
-          Clear
-        </PrimaryButton>
+        <PrimaryButton onClick={handleClearCard}>Clear</PrimaryButton>
       </Box>
       <Box display="flex" gap="1.25rem">
         {isLargeScreen ? (
@@ -109,8 +124,8 @@ export default function PlayerScorecard({
             grandTotal={grandTotal}
             rounds={rounds}
             roundSelected={roundSelected}
-            onChangeRound={onChangeRound}
-            onChangeScorecard={onChangeScorecard}
+            onChangeRound={handleChangeRound}
+            onChangeScorecard={handleChangeScorecard}
           />
         )}
       </Box>
