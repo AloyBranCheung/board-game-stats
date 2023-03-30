@@ -58,8 +58,11 @@ export default function Overall({ isLoading, data }: OverallProps) {
 
     pieChartWinsData.data = Object.values(userWins);
     pieChartWinsData.labels.sort((a, b) => a.localeCompare(b));
-    pieChartLossesData.data = Object.values(userLosses);
-    pieChartLossesData.labels.sort((a, b) => a.localeCompare(b));
+    // manipulates data to put in pie chart
+    pieChartLossesData.labels = Object.keys(userLosses);
+    pieChartLossesData.data = pieChartLossesData.labels.map(
+      (name: string) => userLosses[name]
+    );
 
     // return wins/losses overall obj
     return { pieChartWinsData, pieChartLossesData };
