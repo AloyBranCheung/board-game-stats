@@ -129,10 +129,15 @@ export default function Overall({ isLoading, data }: OverallProps) {
             userLosses[boardGame.loser] += 1;
           }
         });
+
         filteredBoardGameWinsData.data = Object.values(userWins);
         filteredBoardGameWinsData.labels.sort((a, b) => a.localeCompare(b));
-        filteredBoardGameLossesData.data = Object.values(userLosses);
-        filteredBoardGameLossesData.labels.sort((a, b) => a.localeCompare(b));
+
+        filteredBoardGameLossesData.labels = Object.keys(userLosses).sort();
+        filteredBoardGameLossesData.data =
+          filteredBoardGameLossesData.labels.map(
+            (name: string) => userLosses[name]
+          );
 
         return { filteredBoardGameWinsData, filteredBoardGameLossesData };
       }
