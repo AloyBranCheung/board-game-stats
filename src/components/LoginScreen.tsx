@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, CircularProgress } from "@mui/material";
 // components
 import Input from "src/components/UI/form-components/Input";
+import CopyIcon from "./UI/Icons/CopyIcon";
 // custom hooks
 import useFirebaseAuth from "src/hooks/useFirebaseAuth";
 // types/validators
@@ -68,6 +69,17 @@ export default function LoginScreen() {
           </Button>
         )}
       </form>
+      <div className="flex flex-col gap-2 items-center justify-center">
+        <p>Don&apos;t have an account? No worries use the demo account.</p>
+        <div className="border-2 border-solid border-black rounded-xl p-1">
+          <CopyIcon label="user: demo@demo.com" value="demo@demo.com" />
+          <CopyIcon
+            label="pass: IIBVT(jIjf,z,nyJR(Ez"
+            value="IIBVT(jIjf,z,nyJR(Ez"
+          />
+        </div>
+        <p>Want a personal one? Message me on Github.</p>
+      </div>
     </div>
   );
 }
