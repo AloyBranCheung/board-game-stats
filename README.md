@@ -1,5 +1,11 @@
 # Track board game wins/losses with my SO
 
+Getting Started:
+
+1. `npm install`
+2. Setup .env file, values from firebase, see `.env.example`
+2. `npm run dev`
+
 Tech Stack:
 
 <p align="left">
