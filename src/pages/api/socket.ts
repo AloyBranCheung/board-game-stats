@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 // auth
 import isAuthenticated from "src/utils/isAuthenticated";
 // jabba
-import JabbaBot from "src/utils/jabbaBot";
+import JabbaBot, { RegularBot } from "src/utils/jabbaBot";
 // types
 import { WingspanChatMessage } from "src/@types/chat";
 import { SingleScorecard } from "src/@types/gameState";
@@ -47,9 +47,23 @@ export default async function handler(
 
               // when socket establishes a connection
               io.on("connection", (socket) => {
+                const connectedUsers = [];
+
+                if (decodedToken?.decodedToken?.email) {
+                  connectedUsers.push(decodedToken.decodedToken.email);
+                }
+
                 console.log(
                   `${decodedToken?.decodedToken?.email} has connected.`
                 );
+
+                const isDemoUserPresent =
+                  connectedUsers.includes("demo@demo.com");
+
+                let serverBot: typeof RegularBot | typeof JabbaBot = RegularBot;
+                if (!isDemoUserPresent) {
+                  serverBot = JabbaBot;
+                }
 
                 resetApp.clearTimer();
 
@@ -57,10 +71,10 @@ export default async function handler(
                 // when user first joins will emit this
                 io.emit("messageFromServer", {
                   id: uuid(),
-                  username: JabbaBot.name,
+                  username: serverBot.name,
                   message:
-                    typeof JabbaBot.prefixPillow === "function" &&
-                    JabbaBot.prefixPillow(
+                    typeof serverBot.prefix === "function" &&
+                    serverBot.prefix(
                       "A user has entered the chat. Welcome :D. Try '/commands' for a list of my commands."
                     ),
                   _createdAt: Date.now(), // unix date here
@@ -73,11 +87,12 @@ export default async function handler(
                     socket.broadcast.emit("messageFromServer", message);
                     const { message: wingspanMessage } = message;
 
-                    if (wingspanMessage in JabbaBot) {
+                    if (wingspanMessage in serverBot) {
                       io.emit("messageFromServer", {
                         id: uuid(),
-                        username: JabbaBot.name,
-                        message: JabbaBot[wingspanMessage],
+                        username: serverBot.name,
+                        message:
+                          serverBot[wingspanMessage as keyof typeof serverBot],
                         _createdAt: Date.now(),
                       });
                     }
