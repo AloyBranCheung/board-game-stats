@@ -4,7 +4,9 @@ Getting Started:
 
 1. `npm install`
 2. Setup .env file, values from firebase, see `.env.example`
-2. `npm run dev`
+3. `npm run dev`
+
+Note: deployed on render since Vercel does not support sockets. 
 
 Tech Stack:
 
