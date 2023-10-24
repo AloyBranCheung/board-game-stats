@@ -111,24 +111,26 @@ export default function Overall({ isLoading, data }: OverallProps) {
         const userLosses: { [user: string]: number } = {};
 
         // logic
-        sortedByBoardGames[selectedBoardGame].forEach((boardGame) => {
-          // wins
-          if (!filteredBoardGameWinsData.labels.includes(boardGame.winner))
-            filteredBoardGameWinsData.labels.push(boardGame.winner);
-          if (!(boardGame.winner in userWins)) {
-            userWins[boardGame.winner] = 1;
-          } else {
-            userWins[boardGame.winner] += 1;
-          }
-          // losses
-          if (!filteredBoardGameLossesData.labels.includes(boardGame.loser))
-            filteredBoardGameLossesData.labels.push(boardGame.loser);
-          if (!(boardGame.loser in userLosses)) {
-            userLosses[boardGame.loser] = 1;
-          } else {
-            userLosses[boardGame.loser] += 1;
-          }
-        });
+        if (sortedByBoardGames[selectedBoardGame]) {
+          sortedByBoardGames[selectedBoardGame].forEach((boardGame) => {
+            // wins
+            if (!filteredBoardGameWinsData.labels.includes(boardGame.winner))
+              filteredBoardGameWinsData.labels.push(boardGame.winner);
+            if (!(boardGame.winner in userWins)) {
+              userWins[boardGame.winner] = 1;
+            } else {
+              userWins[boardGame.winner] += 1;
+            }
+            // losses
+            if (!filteredBoardGameLossesData.labels.includes(boardGame.loser))
+              filteredBoardGameLossesData.labels.push(boardGame.loser);
+            if (!(boardGame.loser in userLosses)) {
+              userLosses[boardGame.loser] = 1;
+            } else {
+              userLosses[boardGame.loser] += 1;
+            }
+          });
+        }
 
         filteredBoardGameWinsData.data = Object.values(userWins);
         filteredBoardGameWinsData.labels.sort((a, b) => a.localeCompare(b));

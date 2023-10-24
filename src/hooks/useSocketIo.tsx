@@ -8,32 +8,44 @@ export default function useSocketIo() {
   const { getUserIdToken } = useFirebaseAuth();
   const [socket, setSocket] = useState<Socket>();
   const [socketId, setSocketId] = useState<string>("");
-  const socketInitializer = async () => {
-    const token = await getUserIdToken();
-
-    await axios.get("/api/socket", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const socket = io();
-
-    setSocket(socket);
-
-    socket.on("connect", () => {
-      // eslint-disable-next-line no-console
-      console.log("connected to server");
-      const sessionId = socket.id;
-      setSocketId(sessionId);
-    });
-  };
 
   useEffect(() => {
+    const socketInitializer = async () => {
+      const token = await getUserIdToken();
+
+      await axios.get("/api/socket", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const socket = io();
+
+      setSocket(socket);
+
+      socket.on("connect", () => {
+        // eslint-disable-next-line no-console
+        console.log("connected to server");
+        const sessionId = socket.id;
+        setSocketId(sessionId);
+      });
+
+      socket.on("disconnect", () => {
+        // eslint-disable-next-line no-console
+        console.log("disconnected from server");
+      });
+    };
+
     if (!socket) {
       socketInitializer();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    // function cleanup() {
+    //   socket?.disconnect();
+    // }
+
+    // return cleanup;
+  }, [getUserIdToken, socket]);
 
   return { socket, socketId };
 }
