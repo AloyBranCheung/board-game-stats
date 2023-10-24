@@ -18,6 +18,7 @@ export default function useSocketIo() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       const socket = io();
 
       setSocket(socket);
@@ -28,14 +29,22 @@ export default function useSocketIo() {
         const sessionId = socket.id;
         setSocketId(sessionId);
       });
+
+      socket.on("disconnect", () => {
+        // eslint-disable-next-line no-console
+        console.log("disconnected from server");
+      });
     };
 
     if (!socket) {
       socketInitializer();
     }
-    // return () => {
-    //   if (socket) socket.disconnect();
-    // };
+
+    // function cleanup() {
+    //   socket?.disconnect();
+    // }
+
+    // return cleanup;
   }, [getUserIdToken, socket]);
 
   return { socket, socketId };
