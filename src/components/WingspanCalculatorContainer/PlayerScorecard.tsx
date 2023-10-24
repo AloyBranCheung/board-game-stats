@@ -43,6 +43,7 @@ export default function PlayerScorecard({
 
   const handleChangeScorecard = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value, name } = e.target;
+    if (name === "username") return;
     const roundToChange = singleScorecard.rounds[Number(id)] as ScoreFields;
     roundToChange[name as keyof Omit<ScoreFields, "_id">] = Number(value);
     socket?.emit("updateScorecard", singleScorecard);
